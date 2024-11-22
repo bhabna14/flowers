@@ -114,7 +114,7 @@
                       {{ Auth::guard('users')->user()->name ?: Auth::guard('users')->user()->mobile_number }} <i class="icon-chevron-sm-down text-7 ml-10"></i>
                   </div>
               </div>
-              <div class="searchMenu-loc__field shadow-2 js-popup-window" data-x-dd="searchMenu-loc" data-x-dd-toggle="-is-active">
+              <div class="searchMenu-loc__field shadow-2 js-popup-window" data-x-dd="searchMenu-loc" data-x-dd-toggle="-is-active" style="margin-left: -76px;">
                   <div class="bg-white sm:px-0 sm:py-15 rounded-4 text-center">
                       <div class="y-gap-5 js-results">
                          
