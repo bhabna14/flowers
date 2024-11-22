@@ -117,16 +117,16 @@
               <div class="searchMenu-loc__field shadow-2 js-popup-window" data-x-dd="searchMenu-loc" data-x-dd-toggle="-is-active">
                   <div class="bg-white sm:px-0 sm:py-15 rounded-4 text-center">
                       <div class="y-gap-5 js-results">
+                         
                           <div class="text-center js-search-option">
-                              <a href="{{ url('/user-flower-dashboard') }}">Dashboard</a>
-                          </div>
-                          <div class="text-center js-search-option">
-                            <a href="{{ route('subscription.history') }}">Manage Subscription History</a>
+                            <a href="{{ route('subscription.history') }}">Manage Subscription <br>History</a>
                           </div>
                           <div class="text-center js-search-option">
                               <a href="{{ url('manage-user-address') }}">Manage Address</a>
                           </div>
-                         
+                          <div class="text-center js-search-option">
+                            <a href="{{ route('user.userprofile') }}">My Account</a>
+                          </div>
                           <div class="text-center js-search-option">
                               <a href="{{ route('userlogout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                               <form id="logout-form" action="{{ route('userlogout') }}" method="POST" style="display: none;">
@@ -158,15 +158,31 @@
             <div>
               
               <div class="dropdown">
-                <button class="dropbtn"><a href="#" class="d-flex items-center icon-user text-inherit text-22"></a></button>
+                <button class="dropbtn">
+                  
+                  <a href="#" class="d-flex items-center icon-user text-inherit text-22"></a></button>
                 @auth('users')
                 <div class="dropdown-content">
-                  
-                  <a href="{{url('my-profile')}}">My profile</a>
-                  <a href="{{url('order-history')}}">Manage Address</a>
-                  <a href="{{url('manage-address')}}">Orders</a>
-                  <a href="#">Logout</a>
-                </div>
+                  <ul class="menu-list list-unstyled mb-0 text-start">
+                      <li class="menu-item py-2">
+                          <a href="{{ route('subscription.history') }}" class="menu-link d-block px-3 py-2 text-decoration-none text-dark rounded-2 hover:bg-light">Manage Subscription History</a>
+                      </li>
+                      <li class="menu-item py-2">
+                          <a href="{{ url('manage-user-address') }}" class="menu-link d-block px-3 py-2 text-decoration-none text-dark rounded-2 hover:bg-light">Manage Address</a>
+                      </li>
+                      <li class="menu-item py-2">
+                          <a href="{{ route('user.userprofile') }}" class="menu-link d-block px-3 py-2 text-decoration-none text-dark rounded-2 hover:bg-light">My Account</a>
+                      </li>
+                      <li class="menu-item py-2">
+                          <a href="{{ route('userlogout') }}" class="menu-link d-block px-3 py-2 text-decoration-none text-danger rounded-2 hover:bg-light"
+                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                          <form id="logout-form" action="{{ route('userlogout') }}" method="POST" style="display: none;">
+                              @csrf
+                          </form>
+                      </li>
+                  </ul>
+              </div>
+              
                 @else
                 <div class="dropdown-content">
                   <a href="{{ route('userlogin') }}">

@@ -76,51 +76,51 @@ Route::group(['middleware' => ['auth:users']], function () {
 });
 ## user login
 Route::controller(userController::class)->group(function() {
-    Route::get('/register', 'userregister')->name('user-register');
-    Route::post('store', 'store')->name('store');
-    Route::get('/', 'userindex')->name('userindex');
+    // Route::get('/register', 'userregister')->name('user-register');
+    // Route::post('store', 'store')->name('store');
+    // Route::get('/', 'userindex')->name('userindex');
    
 
-    Route::get('/pandit-list', 'panditlist')->name('panditlist');
+    // Route::get('/pandit-list', 'panditlist')->name('panditlist');
 
-    Route::get('/pandits/{pooja_id}/{pandit_id}',  'list')->name('pandit.list');
+    // Route::get('/pandits/{pooja_id}/{pandit_id}',  'list')->name('pandit.list');
 
 
-    Route::get('/pooja-list', 'poojalist')->name('poojalist');
-    Route::get('/pooja/{slug}', 'poojadetails')->name('pooja.show');
-    Route::get('/pooja/{poojaSlug}/{panditSlug}', 'panditDetails')->name('pandit.details');
+    // Route::get('/pooja-list', 'poojalist')->name('poojalist');
+    // Route::get('/pooja/{slug}', 'poojadetails')->name('pooja.show');
+    // Route::get('/pooja/{poojaSlug}/{panditSlug}', 'panditDetails')->name('pandit.details');
 
-    Route::get('/our-pandit/{slug}', 'singlepanditDetails')->name('pandit.show');
-    Route::get('/book-now/{panditSlug}/{poojaSlug}/{poojaFee}', 'bookNow')->name('book.now');
-    Route::post('/booking/confirm',  'confirmBooking')->name('booking.confirm');
+    // Route::get('/our-pandit/{slug}', 'singlepanditDetails')->name('pandit.show');
+    // Route::get('/book-now/{panditSlug}/{poojaSlug}/{poojaFee}', 'bookNow')->name('book.now');
+    // Route::post('/booking/confirm',  'confirmBooking')->name('booking.confirm');
     
     // Route::get('/booking/success',  'bookingSuccess')->name('booking.success');
     // Route::get('/pandit-details', 'panditetails')->name('panditdetails');
     // Route::get('/book-now', 'booknow')->name('booknow');
-    Route::get('/about-us', 'aboutus')->name('aboutus');
-    Route::get('/contact', 'contact')->name('contact');
+    // Route::get('/about-us', 'aboutus')->name('aboutus');
+    // Route::get('/contact', 'contact')->name('contact');
    
     Route::get('/userlogin', 'userlogin')->name('userlogin');
-    Route::post('/save-userlogin', 'storeloginData')->name('user.login');
-    Route::get('/userotp','showOtpForm')->name('user.otp');
-    Route::post('/check-otp', 'checkuserotp')->name('check.userotp');
-    Route::post('user/authenticate', 'userauthenticate')->name('userauthenticate');
+    // Route::post('/save-userlogin', 'storeloginData')->name('user.login');
+    // Route::get('/userotp','showOtpForm')->name('user.otp');
+    // Route::post('/check-otp', 'checkuserotp')->name('check.userotp');
+    // Route::post('user/authenticate', 'userauthenticate')->name('userauthenticate');
     Route::post('user/logout', 'userlogout')->name('userlogout');
-    // Route::get('/search',  'search')->name('pandit.search');
-    Route::get('/ajax-search',  'ajaxSearch')->name('pandit.ajaxSearch');
-    Route::get('/ajax-search-pooja', 'ajaxSearchPooja')->name('pooja.ajaxSearchPooja');
+    // // Route::get('/search',  'search')->name('pandit.search');
+    // Route::get('/ajax-search',  'ajaxSearch')->name('pandit.ajaxSearch');
+    // Route::get('/ajax-search-pooja', 'ajaxSearchPooja')->name('pooja.ajaxSearchPooja');
 
-    // Route::get('/search-pooja','searchPooja')->name('search.pooja');
+    // // Route::get('/search-pooja','searchPooja')->name('search.pooja');
 
     // routes/web.php
-Route::get('/poojas', 'fetchPoojas')->name('fetchPoojas');
+// Route::get('/poojas', 'fetchPoojas')->name('fetchPoojas');
 
-Route::get('/register', 'userregister')->name('user-register');
+// Route::get('/register', 'userregister')->name('user-register');
 
 });
 Route::controller(FlowerUserBookingController::class)->group(function() {
         //flower routes
-        Route::get('/flower', 'flower')->name('flower');
+        Route::get('/', 'flower')->name('userindex');
 });
 Route::group(['middleware' => ['auth:users']], function () {
     Route::controller(FlowerUserBookingController::class)->group(function() {
