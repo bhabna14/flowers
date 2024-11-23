@@ -243,10 +243,13 @@
                           <!-- Check if today's date matches the start date -->
                           {{-- @if (\Carbon\Carbon::today()->toDateString() === \Carbon\Carbon::parse($order->subscription->start_date)->toDateString()) --}}
                               <!-- Display the success badge if the dates match -->
-                        <span class="badge 
-                              {{ $order->subscription->status === 'paused' ? 'badge-warning' : 'badge-success' }}">
-                              {{ ucfirst($order->subscription->status) }}
-                          </span>
+                              @if ($order->subscription->start_date != 23)
+                              <span class="badge 
+                                  {{ $order->subscription->status === 'paused' ? 'badge-warning' : 'badge-success' }}">
+                                  {{ ucfirst($order->subscription->status) }}
+                              </span>
+                          @endif
+                          
                           {{-- @else --}}
                               <!-- Display the "Not Started" badge if the dates don't match -->
                               {{-- <span class="badge badge-secondary">Not Started</span> --}}

@@ -58,14 +58,17 @@ class FlowerOrderController extends Controller
     ->get();
 
 
-    $pendingRequests = FlowerRequest::where('user_id', $userid)
-        ->with([
-            'flowerProduct',
-            'user',
-            'address',
-            'flowerRequestItems' // Eager load flowerRequestItems
-        ])
-        ->orderBy('id', 'desc')
+    $pendingRequests =  FlowerRequest::where('user_id', $userid)
+    ->with([
+        'order' => function ($query) {
+            $query->with('flowerPayments');
+        },
+        'flowerProduct',
+        'user',
+        'address.localityDetails',
+        'flowerRequestItems' 
+    ])
+    ->orderBy('id', 'desc')
         ->get();
     
     // Step 2: For each flower request, check if an associated order exists

@@ -15,12 +15,12 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        $schedule->command('subscriptions:update-status')->daily();
-        $schedule->call(function () {
-            Subscription::expireIfEnded();
-        })->daily();
+        // Schedule the subscription status update command to run daily
+        $schedule->command('subscription:update-status-active')->daily();
+
+        $schedule->command('subscription:resume-paused')->daily();
     }
+
 
     /**
      * Register the commands for the application.
@@ -29,9 +29,19 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
+        // $this->load(__DIR__.'/Commands');
+
+        // require base_path('routes/console.php');
+
         $this->load(__DIR__.'/Commands');
 
+        // Register the command explicitly if needed
+        // $this->command('subscription:update-status-active', \App\Console\Commands\UpdateSubscriptionStatusActive::class);
+    
         require base_path('routes/console.php');
     }
+
+
+    
     
 }

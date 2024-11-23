@@ -1,11 +1,12 @@
 @extends('user.layouts.front-flower')
 
 @section('styles')
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<!-- jQuery UI CSS for datepicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- jQuery Timepicker CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     .ui-datepicker {
@@ -17,9 +18,6 @@
     .ui-datepicker td a {
         cursor: pointer;
     }
-</style>
-<style>
-    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
@@ -29,11 +27,9 @@
         width: 100%;
         height: 100%;
         overflow: auto;
-        background-color: rgb(0, 0, 0);
         background-color: rgba(0, 0, 0, 0.4);
         padding-top: 60px;
     }
-
     .modal-content {
         background-color: #fefefe;
         margin: 5% auto;
@@ -41,63 +37,28 @@
         border: 1px solid #888;
         width: 80%;
     }
-
     .close {
         color: #aaa;
         float: right;
         font-size: 28px;
         font-weight: bold;
     }
-
     .close:hover,
     .close:focus {
         color: black;
         text-decoration: none;
         cursor: pointer;
     }
-
     .form-group {
         margin-bottom: 15px;
     }
-
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0 10px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    .error-message {
-        color: red;
-        font-weight: bold;
-        margin-top: 5px;
-    }
-
-
-    /* .button {
-        background-color: blue;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .button:hover {
-        background-color: darkblue;
-    } */
-
     .mt-10 {
         margin-top: 10px;
     }
-
     .pt-30 {
         padding-top: 30px;
     }
-</style>  
+</style>
 @endsection
 
 @section('content')
@@ -105,80 +66,69 @@
     <div class="container">
         <div class="row">
             <div class="contents-wrapper">
-                <div class="sc-gJqsIT bdDCMj logo" height="6rem" width="30rem">
-                    <div class="low-res-container">
-                    </div>
-                </div>
                 <h1 class="sc-7kepeu-0 kYnyFA description">BOOK NOW</h1>
             </div>
         </div>
 </section>
 
-
 <section class="booking-form mt-30 mb-30">
     <div class="container">
         <div class="row">
-            <h4 class="mb-20">Book Now</h4>
+            <h4 class="mb-20">Order Now</h4>
             @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-            @if (session('error'))
-                <script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: '{{ session('error') }}',
-                        confirmButtonText: 'Okay'
-                    });
-                </script>
-            @endif
-
-            @if (session('success'))
+            <li>{{ $error }}</li>
+        @endforeach
+        @if (session('error'))
             <script>
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Subscription Activated Successfully',
-                    text: '{{ session('success') }}',
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '{{ session('error') }}',
                     confirmButtonText: 'Okay'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to the booking history page
-                        window.location.href = '{{ route('subscription.history') }}'; // Make sure to use the correct route name
-                    }
                 });
             </script>
-             @endif
+        @endif
 
+        @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Subscription Activated Successfully',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'Okay'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Redirect to the booking history page
+                    window.location.href = '{{ route('subscription.history') }}'; // Make sure to use the correct route name
+                }
+            });
+        </script>
+         @endif
             <div class="col-md-7">
                 <form action="{{ route('booking.flower.subscription') }}" method="POST" id="bookingForm">
                     @csrf
                     <input type="hidden" name="duration" value="{{ $product->duration }}">
                     <input type="hidden" name="price" value="{{ $product->price }}">
                     <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                    @if(!$addresses->isEmpty())
+                  
+                
                     <div class="row">
-                        <div class="form-input mt-20 col-md-12 " style="margin-bottom: 0px !important">
-                            <label for="">Please Select the Date</label>
-                            <input type="text" name="start_date" required class="form-control" id="date" placeholder="Select a date">
-                            
+                        <div class="form-input mt-20 col-md-12"  style="margin-bottom: 0px !important">
+                            <label for="date">Please Select the Date <span style="color:red">*</span></label>
+                            <input type="text" name="start_date"  placeholder="Please Select The Date" class="form-control" id="date" required>
                         </div>
                         <div class="error_date"></div>
-                
+                       
                         <div class="form-input mt-20 col-md-12">
-                            <label for="">Suggestions</label>
+                            <label for="suggestion">Suggestions</label>
                             <textarea name="suggestion" id="suggestion" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
-                    @endif
-                
+                    
                     <div class="row">
                         <div class="col-md-12">
                             <div class="your-address-list">
-                                @if($addresses->isEmpty())
-                                    <div class="alert alert-warning">
-                                        Please add an address to continue with your order.
-                                    </div>
-                                @else
+                                
                                     @foreach ($addresses as $address)
                                         <div class="your-address">
                                             <input type="radio" name="address_id" id="address{{ $address->id }}" value="{{ $address->id }}" required>
@@ -193,11 +143,15 @@
                                             </label>
                                         </div>
                                     @endforeach
-                                @endif
+                               
                             </div>
                         </div>
                     </div>
-                
+                    <div id="errorMessage" style="color: red; display: none;">
+                        Please add an address to continue with your order.
+                    </div>
+                    
+                    
                     <div class="row" style="margin-top:20px; margin-bottom: 24px;">
                         <div class="col-md-4">
                             <a href="#" class="add-address-btn" id="addAddressBtn"><i class="fa fa-plus"></i> Add Address</a>
@@ -205,10 +159,10 @@
                     </div>
                 
                     <button type="button" id="payButton" class="button -md -blue-1 bg-dark-3 text-white mt-20">Pay with Razorpay</button>
+
                 </form>
                 
-               
-                
+           
             </div>
             <div class="col-xl-5 col-lg-5">
                 <div class="md:ml-0">
@@ -362,35 +316,40 @@
         </div>
     </div>
 </div>
-
-
 @endsection
 
 @section('scripts')
-{{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> --}}
+
+
+<!-- jQuery library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- jQuery UI library for datepicker -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- jQuery Timepicker plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.min.js"></script>
+
 
 <script>
-    $(document).ready(function() {
-        // Initialize datepicker
-        $(document).ready(function() {
-    // Initialize datepicker
+$(document).ready(function() {
+    // Initialize datepicker and timepicker
     $("#date").datepicker({
         dateFormat: "yy-mm-dd",
         minDate: 0,
         onSelect: function(dateText) {
             console.log("Date selected: " + dateText);
-            // Update the time picker when a date is selected
+            // Update the timepicker when a date is selected
             $("#time").timepicker('option', 'minTime', getMinTime());
         }
     });
 
-    // Calculate current time + 2 hours and format it for the timepicker
+    // Function to calculate current time + 2 hours and format it for the timepicker
     function getMinTime() {
         const now = new Date();
         now.setHours(now.getHours() + 2);
         now.setMinutes(0); // Round minutes to the nearest 15 if needed
 
-        // Format the time as HH:mm
         let hours = now.getHours();
         let minutes = now.getMinutes();
         if (minutes < 10) minutes = '0' + minutes;
@@ -400,50 +359,36 @@
     }
 
     // Initialize timepicker
-    $(document).ready(function() {
-    // Initialize timepicker
     $("#time").timepicker({
         timeFormat: 'h:i A', // 12-hour format with AM/PM
         step: 15, // Interval for selectable times
         minTime: getMinTime(), // Start time is 2 hours from current time
-        maxTime: '23:59', // Optional: Set max time if needed
+        maxTime: '23:59',
         dynamic: false,
         dropdown: true,
         scrollbar: true
     });
 
-    // Function to get minimum time 2 hours from current time
-    function getMinTime() {
-        let currentTime = new Date();
-        currentTime.setHours(currentTime.getHours() + 2);
-        return currentTime.getHours() + ':' + currentTime.getMinutes();
-    }
-});
+    // Open address modal
+    $("#addAddressBtn").click(function() {
+        $("#addressModal").show();
+    });
 
-});
-
-// Open address modal
-$("#addAddressBtn").click(function() {
-    $("#addressModal").show();
-});
-
-// Close the modal
-$("#closeModal").click(function() {
-    $("#addressModal").hide();
-});
-
-// Close modal if clicked outside
-window.onclick = function(event) {
-    if (event.target == document.getElementById("addressModal")) {
+    // Close the modal
+    $("#closeModal").click(function() {
         $("#addressModal").hide();
-    }
-};
+    });
 
-// Handle address form submission
-// Handle address form submission
+    // Close modal if clicked outside
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("addressModal")) {
+            $("#addressModal").hide();
+        }
+    };
+
+   // Handle address form submission
 $('#addressForm').on('submit', function (e) {
     e.preventDefault(); // Prevent the form from submitting normally
-
     var formData = new FormData(this); // Collect form data
 
     // AJAX request to submit the form
@@ -464,24 +409,37 @@ $('#addressForm').on('submit', function (e) {
                     text: 'Address saved successfully!',
                     icon: 'success',
                     confirmButtonText: 'Okay'
+                }).then((result) => {
+                    // Reload the page after the alert is dismissed
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
                 });
 
                 // Dynamically append the new address to the address list
                 var localityName = response.address.locality ? response.address.locality : 'N/A';
-                var newAddressHtml = '<div class="your-address">' +
-                                        '<input type="radio" name="address_id" id="address' + response.address.id + '" value="' + response.address.id + '" required>' +
-                                        '<label for="address' + response.address.id + '">' +
-                                            '<div class="address-type">' + response.address.address_type + '</div>' +
-                                            response.address.apartment_flat_plot + ', ' + localityName + ', ' +
-                                            response.address.city + ', ' + response.address.state + ', ' + response.address.country + ', ' + response.address.pincode +
-                                        '</label>' +
-                                    '</div>';
+                var newAddressHtml = `
+                    <div class="your-address">
+                        <input type="radio" name="address_id" id="address${response.address.id}" value="${response.address.id}" required>
+                        <label for="address${response.address.id}">
+                            <div class="address-type">${response.address.address_type}</div>
+                            ${response.address.apartment_flat_plot ?? ""}, ${localityName},
+                            ${response.address.landmark ?? ""}<br>
+                            ${response.address.city}, ${response.address.state}, ${response.address.country}, ${response.address.pincode}
+                            ${response.address.default == 1 ? '<div class="default-badge">Default</div>' : ''}
+                        </label>
+                    </div>`;
 
                 // Append the new address to the 'your-address-list' container
                 $('.your-address-list').append(newAddressHtml);
 
                 // Hide the empty warning message if there are now addresses
-                $('.alert-warning').hide();
+                if ($('.your-address-list .your-address').length > 0) {
+                    $('.alert-warning').hide();
+                }
+
+                // Reset the form fields
+                $('#addressForm')[0].reset();
             } else {
                 // If there was an error saving the address, show an error message with SweetAlert
                 Swal.fire({
@@ -504,36 +462,22 @@ $('#addressForm').on('submit', function (e) {
     });
 });
 
+});
 
-
-
-
-    });
 </script>
-
-<!-- jQuery UI library for datepicker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-
-<!-- jQuery Timepicker plugin -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.min.js"></script>
-
 <script>
-   
-        // Initialize datepicker
-        $(document).ready(function() {
-    // Initialize datepicker
-    $("#date").datepicker({
-        dateFormat: "yy-mm-dd",
-        minDate: 0,
-        onSelect: function(dateText) {
-            console.log("Date selected: " + dateText);
-            // Update the time picker when a date is selected
-            $("#time").timepicker('option', 'minTime', getMinTime());
+    document.getElementById('locality').addEventListener('change', function() {
+        var selectedOption = this.options[this.selectedIndex];
+        var pincode = selectedOption.getAttribute('data-pincode');
+  
+        if (pincode) {
+            document.getElementById('pincode').value = pincode;
+        } else {
+            document.getElementById('pincode').value = '';
         }
     });
+  </script>
 
-});
-</script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.getElementById('payButton').onclick = function (e) {

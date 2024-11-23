@@ -1,8 +1,6 @@
 @extends('user.layouts.front-flower')
 
 @section('styles')
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<!-- jQuery UI CSS for datepicker -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 
 <!-- jQuery Timepicker CSS -->
@@ -18,6 +16,9 @@
     .ui-datepicker td a {
         cursor: pointer;
     }
+</style>
+<style>
+    /* Modal styles */
     .modal {
         display: none;
         position: fixed;
@@ -27,9 +28,11 @@
         width: 100%;
         height: 100%;
         overflow: auto;
+        background-color: rgb(0, 0, 0);
         background-color: rgba(0, 0, 0, 0.4);
         padding-top: 60px;
     }
+
     .modal-content {
         background-color: #fefefe;
         margin: 5% auto;
@@ -37,28 +40,63 @@
         border: 1px solid #888;
         width: 80%;
     }
+
     .close {
         color: #aaa;
         float: right;
         font-size: 28px;
         font-weight: bold;
     }
+
     .close:hover,
     .close:focus {
         color: black;
         text-decoration: none;
         cursor: pointer;
     }
+
     .form-group {
         margin-bottom: 15px;
     }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0 10px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .error-message {
+        color: red;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+
+    /* .button {
+        background-color: blue;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: darkblue;
+    } */
+
     .mt-10 {
         margin-top: 10px;
     }
+
     .pt-30 {
         padding-top: 30px;
     }
-</style>
+</style>  
 @endsection
 
 @section('content')
@@ -66,107 +104,77 @@
     <div class="container">
         <div class="row">
             <div class="contents-wrapper">
+                <div class="sc-gJqsIT bdDCMj logo" height="6rem" width="30rem">
+                    <div class="low-res-container">
+                    </div>
+                </div>
                 <h1 class="sc-7kepeu-0 kYnyFA description">BOOK NOW</h1>
             </div>
         </div>
 </section>
 
+
 <section class="booking-form mt-30 mb-30">
     <div class="container">
         <div class="row">
-            <h4 class="mb-20">Order Now</h4>
+            <h4 class="mb-20">Book Now</h4>
             @foreach ($errors->all() as $error)
                 <li>{{ $error }}</li>
             @endforeach
             @if (session('error'))
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: '{{ session('error') }}',
-                    confirmButtonText: 'Okay'
-                });
-            </script>
-            @endif
-            
-            @if (session('message'))
                 <script>
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Flower request created successfully!',
-                        text: '{{ session('message') }}',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: '{{ session('error') }}',
                         confirmButtonText: 'Okay'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '{{ route('requested.order.history') }}';
-                        }
                     });
                 </script>
             @endif
 
+            @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Subscription Activated Successfully',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'Okay'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Redirect to the booking history page
+                        window.location.href = '{{ route('subscription.history') }}'; // Make sure to use the correct route name
+                    }
+                });
+            </script>
+             @endif
+
             <div class="col-md-7">
-                <form action="{{ route('booking.flower.customizedstore') }}" method="POST" id="bookingForm">
+                <form action="{{ route('booking.flower.subscription') }}" method="POST" id="bookingForm">
                     @csrf
+                    <input type="hidden" name="duration" value="{{ $product->duration }}">
+                    <input type="hidden" name="price" value="{{ $product->price }}">
                     <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                    
-                    <div id="flower-container">
-                        <div class="row mb-3 flower-group">
-                            <div class="col-4">
-                                <label for="">Flower <span style="color:red">*</span></label>
-                                <select name="item[]" class="form-control" required>
-                                 
-                                    @foreach($singleflowers as $singleflower)
-                                        <option value="{{ $singleflower->name }}">
-                                            {{ $singleflower->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-4">
-                                <label for="">Quantity <span style="color:red">*</span></label>
-                                <input type="text" name="quantity[]" required class="form-control" placeholder="Enter quantity">
-                            </div>
-                            <div class="col-4">
-                                <label for="">Unit <span style="color:red">*</span></label>
-                                <select name="unit[]" class="form-control" required>
-                                   
-                                    @foreach($Poojaunits as $Poojaunit)
-                                        <option value="{{ $Poojaunit->unit_name }}">
-                                            {{ $Poojaunit->unit_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <div class="col-md-3 mt-3">
-                        <button type="button" class="button -md -blue-1 bg-dark-3 text-white mt-6 mb-15" id="addFlower" style="font-weight: bold; padding: 10px 20px;">
-                            <i class="fas fa-plus-circle" style="margin-right:5px"></i> Add More
-                        </button>
-                    </div>
+                    @if(!$addresses->isEmpty())
                     <div class="row">
-                        <div class="form-input mt-20 col-md-6">
-                            <label for="date">Please Select the Date <span style="color:red">*</span></label>
-                            <input type="text" name="date" required placeholder="Please Select The Date" class="form-control" id="date" >
+                        <div class="form-input mt-20 col-md-12 " style="margin-bottom: 0px !important">
+                            <label for="">Please Select the Date</label>
+                            <input type="text" name="start_date" required class="form-control" id="date" placeholder="Select a date">
+                            
                         </div>
-                        
-                        <div class="form-input mt-20 col-md-6">
-                            <label for="time">Please Select the Time <span style="color:red">*</span></label>
-                            <input type="text" name="time" required placeholder="Please Select The Time" class="form-control" id="time" >
-                        </div>
-                        
+                       
+                        <div class="error_date"></div>
                 
                         <div class="form-input mt-20 col-md-12">
-                            <label for="suggestion">Suggestions</label>
+                            <label for="">Suggestions</label>
                             <textarea name="suggestion" id="suggestion" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
-                    
+                    @endif
+                
                     <div class="row">
                         <div class="col-md-12">
                             <div class="your-address-list">
-                                
+                               
                                     @foreach ($addresses as $address)
                                         <div class="your-address">
                                             <input type="radio" name="address_id" id="address{{ $address->id }}" value="{{ $address->id }}" required>
@@ -185,33 +193,35 @@
                             </div>
                         </div>
                     </div>
-                    <div id="errorMessage" style="color: red; display: none;">
-                        Please add an address to continue with your order.
-                    </div>
-                    
-                    
+                
                     <div class="row" style="margin-top:20px; margin-bottom: 24px;">
                         <div class="col-md-4">
                             <a href="#" class="add-address-btn" id="addAddressBtn"><i class="fa fa-plus"></i> Add Address</a>
                         </div>
                     </div>
                 
-                    <button type="submit" class="button -md -blue-1 bg-dark-3 text-white mt-20">Order Now</button>
+                    <button type="button" id="payButton" class="button -md -blue-1 bg-dark-3 text-white mt-20">Pay with Razorpay</button>
                 </form>
                 
-           
+               
+                
             </div>
             <div class="col-xl-5 col-lg-5">
                 <div class="md:ml-0">
                     <div class="px-30 py-30 border-light rounded-4">
-                        <div class="text-20 fw-500 mb-30">Your Customization Details</div>
+                        <div class="text-20 fw-500 mb-30">Your Subscription Details</div>
                         <div class="row x-gap-15 y-gap-20">
                             <div class="col-auto">
+                                <!-- Display the product or pandit's photo -->
                                 <img src="{{ asset('storage/'.$product->product_image ?? 'default-image.jpg') }}" alt="Subscription Image" class="size-140 rounded-4 object-cover">
                             </div>
                             <div class="col">
                                 <div class="lh-17 fw-500">{{ $product->name }}</div>
-                                <div class="text-16 lh-15 mt-5 fw-600">{{ $product->immediate_price }}</div>
+                                {{-- <input type="hidden" class="form-control" name="product_id" value="{{ $product_id }}"> --}}
+                                
+                                <div class="text-16 lh-15 mt-5 fw-600">
+                                    Total Fee: ₹{{ sprintf('%.2f', $product->price) }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -348,11 +358,11 @@
         </div>
     </div>
 </div>
+
+
 @endsection
 
 @section('scripts')
-
-
 <!-- jQuery library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -376,41 +386,27 @@
 </script>
 <script>
 $(document).ready(function() {
-    // Initialize datepicker and timepicker
+        
     $("#date").datepicker({
-        dateFormat: "yy-mm-dd",
-        minDate: 0,
-        onSelect: function(dateText) {
-            console.log("Date selected: " + dateText);
-            // Update the timepicker when a date is selected
-            $("#time").timepicker('option', 'minTime', getMinTime());
-        }
-    });
+    dateFormat: "yy-mm-dd",
+    minDate: 0,
+    onSelect: function(dateText) {
+        console.log("Date selected: " + dateText);
+        
+        // Update the timepicker when a date is selected
+        $("#time").timepicker('option', 'minTime', getMinTime());
 
-    // Function to calculate current time + 2 hours and format it for the timepicker
-    function getMinTime() {
-        const now = new Date();
-        now.setHours(now.getHours() + 2);
-        now.setMinutes(0); // Round minutes to the nearest 15 if needed
-
-        let hours = now.getHours();
-        let minutes = now.getMinutes();
-        if (minutes < 10) minutes = '0' + minutes;
-        if (hours < 10) hours = '0' + hours;
-
-        return `${hours}:${minutes}`;
+        // Use setTimeout to hide the datepicker after the onSelect event is fully triggered
+        setTimeout(function() {
+            $("#date").datepicker('hide');
+        }, 100);
     }
+});
 
-    // Initialize timepicker
-    $("#time").timepicker({
-        timeFormat: 'h:i A', // 12-hour format with AM/PM
-        step: 15, // Interval for selectable times
-        minTime: getMinTime(), // Start time is 2 hours from current time
-        maxTime: '23:59',
-        dynamic: false,
-        dropdown: true,
-        scrollbar: true
-    });
+
+
+
+
 
     // Open address modal
     $("#addAddressBtn").click(function() {
@@ -429,145 +425,196 @@ $(document).ready(function() {
         }
     };
 
-   // Handle address form submission
-$('#addressForm').on('submit', function (e) {
-    e.preventDefault(); // Prevent the form from submitting normally
-    var formData = new FormData(this); // Collect form data
 
-    // AJAX request to submit the form
-    $.ajax({
-        url: '{{ route('savefrontaddress') }}', // The route to handle form submission
-        type: 'POST',
-        data: formData,
-        processData: false, // Prevent jQuery from transforming the data
-        contentType: false, // Don't set content type for FormData
-        success: function (response) {
-            if (response.success) {
-                // Close the modal if the address was saved successfully
-                $('#addressModal').hide();
+    // Handle address form submission
+    $('#addressForm').on('submit', function (e) {
+        e.preventDefault(); // Prevent the form from submitting normally
+        var formData = new FormData(this); // Collect form data
 
-                // Show success message with SweetAlert
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Address saved successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'Okay'
-                }).then((result) => {
-                    // Reload the page after the alert is dismissed
-                    if (result.isConfirmed) {
-                        location.reload();
+        // AJAX request to submit the form
+        $.ajax({
+            url: '{{ route('savefrontaddress') }}', // The route to handle form submission
+            type: 'POST',
+            data: formData,
+            processData: false, // Prevent jQuery from transforming the data
+            contentType: false, // Don't set content type for FormData
+            success: function (response) {
+                if (response.success) {
+                    // Close the modal if the address was saved successfully
+                    $('#addressModal').hide();
+
+                    // Show success message with SweetAlert
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Address saved successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'Okay'
+                    }).then((result) => {
+                        // Reload the page after the alert is dismissed
+                        if (result.isConfirmed) {
+                            location.reload();
+                        }
+                    });
+
+                    // Dynamically append the new address to the address list
+                    var localityName = response.address.locality ? response.address.locality : 'N/A';
+                    var newAddressHtml = `
+                        <div class="your-address">
+                            <input type="radio" name="address_id" id="address${response.address.id}" value="${response.address.id}" required>
+                            <label for="address${response.address.id}">
+                                <div class="address-type">${response.address.address_type}</div>
+                                ${response.address.apartment_flat_plot ?? ""}, ${localityName},
+                                ${response.address.landmark ?? ""}<br>
+                                ${response.address.city}, ${response.address.state}, ${response.address.country}, ${response.address.pincode}
+                                ${response.address.default == 1 ? '<div class="default-badge">Default</div>' : ''}
+                            </label>
+                        </div>`;
+
+                    // Append the new address to the 'your-address-list' container
+                    $('.your-address-list').append(newAddressHtml);
+
+                    // Hide the empty warning message if there are now addresses
+                    if ($('.your-address-list .your-address').length > 0) {
+                        $('.alert-warning').hide();
                     }
-                });
 
-                // Dynamically append the new address to the address list
-                var localityName = response.address.locality ? response.address.locality : 'N/A';
-                var newAddressHtml = `
-                    <div class="your-address">
-                        <input type="radio" name="address_id" id="address${response.address.id}" value="${response.address.id}" required>
-                        <label for="address${response.address.id}">
-                            <div class="address-type">${response.address.address_type}</div>
-                            ${response.address.apartment_flat_plot ?? ""}, ${localityName},
-                            ${response.address.landmark ?? ""}<br>
-                            ${response.address.city}, ${response.address.state}, ${response.address.country}, ${response.address.pincode}
-                            ${response.address.default == 1 ? '<div class="default-badge">Default</div>' : ''}
-                        </label>
-                    </div>`;
-
-                // Append the new address to the 'your-address-list' container
-                $('.your-address-list').append(newAddressHtml);
-
-                // Hide the empty warning message if there are now addresses
-                if ($('.your-address-list .your-address').length > 0) {
-                    $('.alert-warning').hide();
+                    // Reset the form fields
+                    $('#addressForm')[0].reset();
+                } else {
+                    // If there was an error saving the address, show an error message with SweetAlert
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'There was an error saving the address.',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                    });
                 }
-
-                // Reset the form fields
-                $('#addressForm')[0].reset();
-            } else {
-                // If there was an error saving the address, show an error message with SweetAlert
+            },
+            error: function (xhr, status, error) {
+                // Show an error message if the AJAX request fails
                 Swal.fire({
                     title: 'Error!',
-                    text: 'There was an error saving the address.',
+                    text: 'There was an error processing your request. Please try again later.',
                     icon: 'error',
                     confirmButtonText: 'Okay'
                 });
             }
-        },
-        error: function (xhr, status, error) {
-            // Show an error message if the AJAX request fails
-            Swal.fire({
-                title: 'Error!',
-                text: 'There was an error processing your request. Please try again later.',
-                icon: 'error',
-                confirmButtonText: 'Okay'
-            });
-        }
-    });
-});
-
-});
-
-</script>
-<script>
-    document.getElementById('locality').addEventListener('change', function() {
-        var selectedOption = this.options[this.selectedIndex];
-        var pincode = selectedOption.getAttribute('data-pincode');
-  
-        if (pincode) {
-            document.getElementById('pincode').value = pincode;
-        } else {
-            document.getElementById('pincode').value = '';
-        }
-    });
-  </script>
-
-     <script>
-        $(document).ready(function() {
-            // Add new flower group
-            $("#addFlower").click(function() {
-                $("#flower-container").append(`
-                    <div class="row mb-3 input-wrapper">
-                        <div class="col-4">
-                            <label for="">Flower</label>
-                            <select name="item[]" class="form-control" required>
-                                
-                                @foreach($singleflowers as $singleflower)
-                                <option value="{{ $singleflower->name }}">
-                                    {{ $singleflower->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-4">
-                            <label for="">Quantity</label>
-                            <input type="text" name="quantity[]" required class="form-control" placeholder="Enter quantity">
-                        </div>
-                        <div class="col-4">
-                            <label for="">Unit</label>
-                            <select name="unit[]" class="form-control" required>
-                               
-                                @foreach($Poojaunits as $Poojaunit)
-                                <option value="{{ $Poojaunit->unit_name }}">
-                                    {{ $Poojaunit->unit_name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-12 mt-2 text-right">
-                            <button type="button" class="button -md -blue-1 bg-dark-3 text-white mt-6 removeChild" style="font-weight: bold; padding: 10px 20px;">
-                                <i class="fas fa-minus-circle" style="margin-right:5px"></i> Remove
-                            </button>
-                        </div>
-                    </div>
-                `);
-            });
-    
-            // Remove a flower group
-            $(document).on('click', '.removeChild', function() {
-                $(this).closest('.input-wrapper').remove(); // Remove the parent div with class input-wrapper
-            });
         });
-    </script>
+    });
+
+
+
+
+
+
+});
+</script>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('payButton').onclick = function (e) {
+        e.preventDefault();
     
+        console.log('Pay button clicked. Validating fields...');
+    
+        // Get the form and input fields
+        var form = document.getElementById('bookingForm');
+        var startDate = form.querySelector('[name="start_date"]');
+        var addressId = form.querySelector('[name="address_id"]:checked');
+        var suggestion = form.querySelector('[name="suggestion"]');
+        var errorDate = form.querySelector('.error_date');
+    
+        // Validation logic
+      
+        if (!startDate.value) {
+            displayError(errorDate, 'Please select a date.');
+            isValid = false;
+            return;
+        }
+    
+        // Validation for address selection
+        if (!addressId) {
+            var addressSection = form.querySelector('.your-address-list');
+            displayError(addressSection, 'Please select an address.');
+            isValid = false;
+            return;
+        }
+        // if (suggestion && suggestion.value.trim() === "") {
+        //     alert('Please provide your suggestion or leave it blank.');
+        // }
+    
+        console.log('Fields validated successfully. Initializing Razorpay...');
+    
+        var amount = {{ ($product->price) * 100 }}; // Amount in paise
+    
+        var options = {
+            "key": "{{ config('services.razorpay.key') }}",
+            "amount": amount,
+            "name": "33 Crores",
+            "description": "",
+            "image": "{{ asset('front-assets/img/brand/logo.png') }}",
+            "handler": function (response) {
+                console.log('Payment handler triggered.');
+                console.log('Payment ID:', response.razorpay_payment_id);
+    
+                // Add the Razorpay payment ID to the form and submit it
+                if (form) {
+                    console.log('Form found. Appending payment ID...');
+                    form.appendChild(createHiddenInput('razorpay_payment_id', response.razorpay_payment_id));
+                    console.log('Submitting form...');
+                    form.submit();
+                } else {
+                    console.error('Form not found!');
+                }
+            },
+            "prefill": {
+                "name": "{{ Auth::guard('users')->user()->name }}",
+                "contact": "{{ Auth::guard('users')->user()->mobile_number }}"
+            },
+            "theme": {
+                "color": "#F37254"
+            }
+        };
+    
+        var rzp1 = new Razorpay(options);
+        console.log('Opening Razorpay checkout...');
+        rzp1.open();
+    };
+    
+    function createHiddenInput(name, value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        return input;
+    }
+
+  
+    
+    function displayError(element, message) {
+        // Create the error message element
+        var error = document.createElement('div');
+        error.className = 'error-message';
+        error.style.color = 'red';
+        error.style.fontWeight = 'bold';
+        error.style.marginTop = '5px';
+        error.textContent = message;
+    
+        // Insert the error message after the element
+        if (element.nextSibling) {
+            element.parentNode.insertBefore(error, element.nextSibling);
+        } else {
+            element.parentNode.appendChild(error);
+        }
+    }
+    
+    function clearErrors() {
+        var errors = document.querySelectorAll('.error-message');
+        errors.forEach(function (error) {
+            error.remove();
+        });
+    }
+</script>
 
 @endsection

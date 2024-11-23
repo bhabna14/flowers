@@ -103,9 +103,8 @@ class FlowerUserBookingController extends Controller
     }
     public function processBooking(Request $request)
     {
-
         \Log::info('processBooking method called');
-
+    
         // Log received payment ID
         \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
     
@@ -114,17 +113,16 @@ class FlowerUserBookingController extends Controller
     
         // Log the input data for verification
         \Log::info('Input data:', $request->all());
-        // Ensure the user is authenticated
-        // $user = Auth::guard('users')->user();
+    
         $productId = $request->product_id; // Assuming you pass product_id in the form
         
         $orderId = 'ORD-' . strtoupper(Str::random(12));
         $addressId = $request->address_id;
         $suggestion = $request->suggestion;
-
+    
         // Log the order creation attempt
         \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
-
+    
         // Create the order
         try {
             $order = Order::create([
@@ -141,11 +139,11 @@ class FlowerUserBookingController extends Controller
             \Log::error('Failed to create order', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to create order');
         }
-
+    
         // Calculate subscription start and end dates
         $startDate = $request->start_date ? Carbon::parse($request->start_date) : now(); // Default to now if no start date is provided
         $duration = $request->duration; // Duration is 1 for 30 days, 3 for 60 days, 6 for 90 days
-
+    
         // Calculate end date based on subscription duration
         if ($duration == 1) {
             $endDate = $startDate->copy()->addDays(29); // For 1, add 30 days
@@ -154,16 +152,22 @@ class FlowerUserBookingController extends Controller
         } else if ($duration == 6) {
             $endDate = $startDate->copy()->addDays(179); // For 6, add 180 days
         } else {
-            // Handle unexpected duration value
             \Log::error('Invalid subscription duration', ['duration' => $duration]);
             return back()->with('error', 'Invalid subscription duration');
         }
-
+    
         // Log subscription creation
         \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
-
+    
         // Create the subscription
         $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
+    
+        // Get today's date to compare with start_date
+        $today = now()->format('Y-m-d');  // Format the date to match start_date format
+    
+        // Determine the status based on the start_date
+        $status = ($startDate->format('Y-m-d') === $today) ? 'active' : 'pending';
+    
         try {
             Subscription::create([
                 'subscription_id' => $subscriptionId,
@@ -173,14 +177,14 @@ class FlowerUserBookingController extends Controller
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'is_active' => true,
-                'status' => 'active'
+                'status' => $status  // Set the status to 'active' or 'pending' based on the start date
             ]);
             \Log::info('Subscription created successfully');
         } catch (\Exception $e) {
             \Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to create subscription');
         }
-
+    
         // Process payment details and create payment record
         try {
             FlowerPayment::create([
@@ -196,13 +200,11 @@ class FlowerUserBookingController extends Controller
             \Log::error('Failed to record payment', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to record payment');
         }
-
-        // Redirect or respond as needed
-        // return redirect()->route('flower-booking.success')->with('success', 'Booking successful');
-
-        return redirect()->back()->with('success', 'Booking successful');
     
+        // Redirect or respond as needed
+        return redirect()->back()->with('success', 'Booking successful');
     }
+    
 
     // public function showSuccessPage($order_id)
     // {
@@ -298,6 +300,8 @@ class FlowerUserBookingController extends Controller
     // customized order
     public function customizedstore(Request $request)
     {
+
+       
         $user = Auth::guard('users')->user();
 
         // Generate the request ID

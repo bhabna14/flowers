@@ -160,10 +160,14 @@
                 
                                                                     </td>
                                                                     <td>
-                                                                        <strong>Address:</strong> {{ $order->address->area ?? "" }}<br>
-                                                                        <strong>City:</strong> {{ $order->address->city ?? ""}}<br>
-                                                                        <strong>State:</strong> {{ $order->address->state ?? ""}}<br>
-                                                                        <strong>Zip Code:</strong> {{ $order->address->pincode ?? "" }}
+                                                                        
+                                                                            <strong>Address:</strong> {{ $order->address->apartment_flat_plot ?? "" }}, {{ $order->address->locality ?? "" }}<br>
+                                                                            <strong>Landmark:</strong> {{ $order->address->landmark ?? "" }}<br>
+                
+                                                                            <strong>City:</strong> {{ $order->address->city ?? ""}}<br>
+                                                                            <strong>State:</strong> {{ $order->address->state ?? ""}}<br>
+                                                                            <strong>Pin Code:</strong> {{ $order->address->pincode ?? "" }}
+                                                                        
                                                                     </td>
                                                                     {{-- <td>{{ $order->total_price }}</td> --}}
                                                                     <td>{{ number_format($order->total_price, 2) }}</td>
@@ -204,7 +208,7 @@
                                                                     <th>Delivery Date</th>
                                                                   
                                                                     <th>Flower Items</th>
-                                                                   
+                                                                    <th>Price</th>
                                                                     <th>Status</th>
                                                                    
                                                                     <th>Actions</th>
@@ -241,7 +245,7 @@
                                                                             @endif
                                                                         </td>
                                                                         
-                                                                        
+                                                                        <td>{{ $request->order->total_price ?? "NA" }} </td>
                                                                         <td>
                                                                            {{$request->status}}
                                                                         </td>
