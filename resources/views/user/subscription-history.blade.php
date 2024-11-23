@@ -46,7 +46,7 @@
     padding: 0.5rem 1rem;
     border-radius: 20px;
 }
-.badge-warning {
+.badge-danger {
     background-color: #c80100 ; /* Green color for active */
     color: white;
     font-weight: bold;
@@ -66,6 +66,17 @@
     font-weight: bold;
     padding: 0.5rem 1rem;
     border-radius: 20px;
+}
+.badge-warning {
+    background-color: #ffc107; /* Yellow background */
+    color: #212529; /* Dark text color for contrast */
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem; /* Slightly small text size */
+    font-weight: 700; /* Bold text */
+  
+    display: inline-block; /* Inline-block for alignment */
+    text-align: center; /* Center text */
 }
 
 /* Optional: Add some spacing between the badge and the content */
@@ -239,21 +250,22 @@
                             ORDER NUMBER <br>
                             <span style="font-size: 15px">#{{ $order->order_id }}</span> <!-- Order number -->
                         </div>
-                        <div class="col-md-2 text-center" style="    margin-top: 15px;">
-                          <!-- Check if today's date matches the start date -->
-                          {{-- @if (\Carbon\Carbon::today()->toDateString() === \Carbon\Carbon::parse($order->subscription->start_date)->toDateString()) --}}
-                              <!-- Display the success badge if the dates match -->
-                              @if ($order->subscription->start_date != 23)
-                              <span class="badge 
-                                  {{ $order->subscription->status === 'paused' ? 'badge-warning' : 'badge-success' }}">
-                                  {{ ucfirst($order->subscription->status) }}
-                              </span>
-                          @endif
+                        <div class="col-md-2 text-center" style="   ">
+                         
+                             
+                        @if($order->subscription->status === 'pending')
+                            <span class="badge badge-warning">
+                                Your subscription has not started yet
+                            </span>
+                        @else
+                            <span class="badge 
+                                {{ $order->subscription->status === 'active' ? 'badge-success' : ($order->subscription->status === 'paused' ? 'badge-danger' : 'badge-danger') }}">
+                                {{ ucfirst($order->subscription->status) }}
+                            </span>
+                        @endif
+                        
                           
-                          {{-- @else --}}
-                              <!-- Display the "Not Started" badge if the dates don't match -->
-                              {{-- <span class="badge badge-secondary">Not Started</span> --}}
-                          {{-- @endif --}}
+                        
                       </div>
                       
                     </div>

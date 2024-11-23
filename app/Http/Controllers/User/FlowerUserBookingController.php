@@ -442,14 +442,19 @@ class FlowerUserBookingController extends Controller
         }
     }
 
+
     public function resume(Request $request, $order_id)
     {
         try {
+            Log::info('Resume subscription request received.', ['order_id' => $order_id, 'request_data' => $request->all()]);
+    
             // Find the subscription by order_id
             $subscription = Subscription::where('order_id', $order_id)->firstOrFail();
+            Log::info('Subscription found.', ['subscription' => $subscription]);
     
             // Validate that the subscription is currently paused
             if ($subscription->status !== 'paused') {
+                Log::warning('Subscription is not in a paused state.', ['subscription_status' => $subscription->status]);
                 return response()->json([
                     'success' => 400,
                     'message' => 'Subscription is not in a paused state.'
@@ -462,8 +467,16 @@ class FlowerUserBookingController extends Controller
             $pauseEndDate = Carbon::parse($subscription->pause_end_date);
             $currentEndDate = $subscription->new_date ? Carbon::parse($subscription->new_date) : Carbon::parse($subscription->end_date);
     
+            Log::info('Parsed dates.', [
+                'resume_date' => $resumeDate,
+                'pause_start_date' => $pauseStartDate,
+                'pause_end_date' => $pauseEndDate,
+                'current_end_date' => $currentEndDate
+            ]);
+    
             // Ensure the resume date is within the pause period
             if ($resumeDate->lt($pauseStartDate) || $resumeDate->gt($pauseEndDate)) {
+                Log::warning('Resume date is outside the pause period.', ['resume_date' => $resumeDate]);
                 return response()->json([
                     'success' => 400,
                     'message' => 'Resume date must be within the pause period.'
@@ -471,13 +484,19 @@ class FlowerUserBookingController extends Controller
             }
     
             // Calculate the days actually paused until the resume date
-            $actualPausedDays = $resumeDate->diffInDays($pauseStartDate); // Include start date
+            $actualPausedDays = $resumeDate->diffInDays($pauseStartDate);
     
             // Calculate total planned paused days
             $totalPausedDays = $pauseEndDate->diffInDays($pauseStartDate) + 1;
     
             // Calculate the remaining paused days to adjust if resuming early
             $remainingPausedDays = $totalPausedDays - $actualPausedDays;
+    
+            Log::info('Pause days calculated.', [
+                'actual_paused_days' => $actualPausedDays,
+                'total_paused_days' => $totalPausedDays,
+                'remaining_paused_days' => $remainingPausedDays
+            ]);
     
             // Adjust the new end date by subtracting the remaining paused days if necessary
             if ($remainingPausedDays > 0) {
@@ -493,7 +512,9 @@ class FlowerUserBookingController extends Controller
             $subscription->new_date = $newEndDate;
             $subscription->save();
     
-            // Log the resume action 
+            Log::info('Subscription resumed.', ['subscription' => $subscription]);
+    
+            // Log the resume action
             SubscriptionPauseResumeLog::create([
                 'subscription_id' => $subscription->subscription_id,
                 'order_id' => $order_id,
@@ -504,12 +525,15 @@ class FlowerUserBookingController extends Controller
                 'paused_days' => $actualPausedDays,
             ]);
     
+            Log::info('Resume log created.', ['order_id' => $order_id]);
+    
             return response()->json([
                 'success' => 200,
                 'message' => 'Subscription resumed successfully.',
                 'subscription' => $subscription
             ], 200);
         } catch (\Exception $e) {
+            Log::error('Error while resuming subscription.', ['order_id' => $order_id, 'error' => $e->getMessage()]);
             return response()->json([
                 'success' => 500,
                 'message' => 'An error occurred while resuming the subscription.',
