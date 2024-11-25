@@ -10,9 +10,9 @@
     background: linear-gradient(135deg, #ffffff, #f9f9f9);
     transition: transform 0.3s, box-shadow 0.3s;
     border: none;
+    padding-bottom: 25px;
     box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
-    height: 705px;
-
+    /* height: 770px; */
 }
 .product-car_cust {
     border-radius: 15px;
