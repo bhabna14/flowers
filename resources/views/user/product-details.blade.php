@@ -111,10 +111,11 @@
     <div class="row">
         <!-- Product Image Section -->
         <div class="col-md-5">
-            <div class="product-image-container shadow-sm">
-                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid rounded">
+            <div class="product-image-container shadow-sm" style="background: #fff; border-radius: 10px; overflow: hidden; height: 292px; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: cover;">
             </div>
         </div>
+        
 
         <!-- Product Details Section -->
         <div class="col-md-7">
