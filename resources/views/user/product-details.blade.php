@@ -107,12 +107,21 @@
 @endsection
 
 @section('content')
-<div class="container mt-5 mb-5 pb-50">
+<div class="container mt-5 mb-5 pb-50 pt-10">
     <div class="row">
         <!-- Product Image Section -->
         <div class="col-md-5">
-            <div class="product-image-container shadow-sm" style="background: #fff; border-radius: 10px; overflow: hidden; height: 292px; display: flex; align-items: center; justify-content: center;">
-                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: cover;">
+            <div class="product-image-container shadow-sm" style="    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 292px;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e7dfdf;
+    padding: 30px 0px;">
+                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: cover; border-radius:5px;">
             </div>
         </div>
         
