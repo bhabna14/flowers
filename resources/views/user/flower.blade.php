@@ -158,18 +158,16 @@
                     {{ $customizedpp->immediate_price }}
                   </p>
                 
+               
                   @if(Auth::guard('users')->check())
-                    <!-- User is logged in -->
                     <a href="{{ route('cutsomized-checkout', ['product_id' => $customizedpp->product_id]) }}" class="btn btn-gradient w-100 mt-2">
-                        Order Now
+                      Order Now
                     </a>
                   @else
-                      <!-- User is not logged in -->
-                      <a href="{{route('userlogin', ['referer' => urlencode(url()->current())]) }}" class="btn btn-gradient w-100 mt-2">
+                      <a href="{{ route('userlogin', ['referer' => urlencode(route('cutsomized-checkout', ['product_id' => $customizedpp->product_id]))]) }}" class="btn btn-gradient w-100 mt-2">
                           Order Now
                       </a>
                   @endif
-              
                 </div>
               </div>
              </div>

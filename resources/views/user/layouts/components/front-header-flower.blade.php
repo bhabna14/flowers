@@ -21,8 +21,23 @@
                 <ul class="menu__nav -is-active" style="color:#000">
                  
                   <li>
-                    <a data-barba href="{{url('/')}}">
+                    <a data-barba href="https://www.33crores.com/">
                       <span class="mr-10">Home</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a data-barba href="https://pandit.33crores.com/">
+                      <span class="mr-10">Book Pandit</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a data-barba href="https://podcast.33crores.com/">
+                      <span class="mr-10">Podcast</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a data-barba href="https://poojastore.33crores.com/">
+                      <span class="mr-10">Shop</span>
                     </a>
                   </li>
 

@@ -26,7 +26,12 @@ use App\Models\PoojaUnit;
 use App\Models\FlowerRequest;
 use App\Models\FlowerRequestItem;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+
+use Illuminate\Support\Facades\Log; // Make sure to import the Log facade
+use App\Mail\FlowerRequestMail;
+use App\Mail\SubscriptionConfirmationMail;
+
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 
 class FlowerUserBookingController extends Controller
@@ -108,16 +113,16 @@ class FlowerUserBookingController extends Controller
     }
     public function processBooking(Request $request)
     {
-        \Log::info('processBooking method called');
+        // \Log::info('processBooking method called');
     
-        // Log received payment ID
-        \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
+        // // Log received payment ID
+        // \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
     
         $user = Auth::guard('users')->user();
-        \Log::info('Authenticated user ID:', ['user_id' => $user->userid]);
+        // \Log::info('Authenticated user ID:', ['user_id' => $user->userid]);
     
-        // Log the input data for verification
-        \Log::info('Input data:', $request->all());
+        // // Log the input data for verification
+        // \Log::info('Input data:', $request->all());
     
         $productId = $request->product_id; // Assuming you pass product_id in the form
         
@@ -126,7 +131,7 @@ class FlowerUserBookingController extends Controller
         $suggestion = $request->suggestion;
     
         // Log the order creation attempt
-        \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
+        // \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
     
         // Create the order
         try {
@@ -139,7 +144,7 @@ class FlowerUserBookingController extends Controller
                 'address_id' => $addressId,
                 'suggestion' => $suggestion,
             ]);
-            \Log::info('Order created successfully', ['order' => $order]);
+            // \Log::info('Order created successfully', ['order' => $order]);
         } catch (\Exception $e) {
             \Log::error('Failed to create order', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to create order');
@@ -162,7 +167,7 @@ class FlowerUserBookingController extends Controller
         }
     
         // Log subscription creation
-        \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
+        // \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
     
         // Create the subscription
         $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
@@ -184,7 +189,7 @@ class FlowerUserBookingController extends Controller
                 'is_active' => true,
                 'status' => $status  // Set the status to 'active' or 'pending' based on the start date
             ]);
-            \Log::info('Subscription created successfully');
+            // \Log::info('Subscription created successfully');
         } catch (\Exception $e) {
             \Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to create subscription');
@@ -200,12 +205,37 @@ class FlowerUserBookingController extends Controller
                 'paid_amount' => $request->price,
                 'payment_status' => "paid",
             ]);
-            \Log::info('Payment recorded successfully');
+            // \Log::info('Payment recorded successfully');
         } catch (\Exception $e) {
             \Log::error('Failed to record payment', ['error' => $e->getMessage()]);
             return back()->with('error', 'Failed to record payment');
         }
-    
+     // Fetch the complete order details
+     $order = Order::with(['flowerProduct', 'user', 'address.localityDetails', 'flowerPayments', 'subscription'])
+     ->where('order_id', $orderId)
+     ->first();
+
+       if (!$order) {
+    //    \Log::error('Order not found for email sending');
+       return response()->json(['message' => 'Order not found'], 404);
+       }
+
+       // Email recipients
+       $emails = [
+       'bhabana.samantara@33crores.com',
+       'pankaj.sial@33crores.com',
+       'basudha@33crores.com',
+       'priya@33crores.com',
+       'starleen@33crores.com'
+       ];
+
+       // Send the email
+       try {
+       Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
+    //    \Log::info('Order details email sent successfully', ['emails' => $emails]);
+       } catch (\Exception $e) {
+       \Log::error('Failed to send order details email', ['error' => $e->getMessage()]);
+       }
         // Redirect or respond as needed
         return redirect()->back()->with('success', 'Booking successful');
     }
@@ -334,7 +364,41 @@ class FlowerUserBookingController extends Controller
                 'flower_quantity' => $request->quantity[$index],
             ]);
         }
-
+        try {
+            // Log the alert for a new order
+            // Log::info('New order created successfully.', ['request_id' => $requestId]);
+        
+            // Array of email addresses to send the email
+            $emails = [
+                'bhabana.samantara@33crores.com',
+                'pankaj.sial@33crores.com',
+                'basudha@33crores.com',
+                'priya@33crores.com',
+                'starleen@33crores.com',
+            ];
+        
+            // Log before attempting to send the email
+            // Log::info('Attempting to send email to multiple recipients.', ['emails' => $emails]);
+        
+            // Send the email to all recipients
+            Mail::to($emails)->send(new FlowerRequestMail($flowerRequest));
+        
+            // // Log success
+            // Log::info('Email sent successfully to multiple recipients.', [
+            //     'request_id' => $requestId,
+            //     'user_id' => $user->userid,
+            // ]);
+        
+        } catch (\Exception $e) {
+            // Log the error with details
+            Log::error('Failed to send email.', [
+                'request_id' => $requestId,
+                'user_id' => $user->userid ?? 'N/A',
+                'error_message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
+        
         // Return success message using SweetAlert and redirect
         // return redirect()->route('flower.history')->with('success', 'Flower request created successfully!');
         return redirect()->back()->with('message', 'Flower request created successfully!');

@@ -7,7 +7,7 @@
 
     <!-- Google fonts -->
 		<!-- Title -->
-		<title> Flowers</title>
+		<title> Flowers Subscription</title>
 
         @include('user.layouts.components.front-style')
         @yield('styles')
