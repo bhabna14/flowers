@@ -158,8 +158,7 @@
     border-radius: 10px;
     overflow: hidden;
     height: 292px;
-    display: flex
-;
+    display: flex;
     align-items: center;
     justify-content: center;
     border: 1px solid #e7dfdf;
@@ -199,13 +198,15 @@
             <!-- Order Button -->
             @if(Auth::guard('users')->check())
                 <a href="{{ route('checkout', ['product_id' => $product->product_id]) }}" class="btn btn-gradient w-100 mt-2">
-                    Buy Now
+                    Order Now
                 </a>
             @else
-                <a href="{{ route('userlogin', ['referer' => urlencode(url()->current())]) }}" class="btn btn-gradient w-100 mt-2">
-                    Buy Now
+                <a href="{{ route('userlogin', ['referer' => urlencode(route('checkout', ['product_id' => $product->product_id]))]) }}" class="btn btn-gradient w-100 mt-2">
+                    Order Now
                 </a>
             @endif
+
+
         </div>
     </div>
 

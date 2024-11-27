@@ -119,7 +119,7 @@
                         </div>
                         <div class="error_date"></div>
                        
-                        <div class="form-input mt-20 col-md-12">
+                        <div class="form-input mt-30 col-md-12">
                             <label for="suggestion">Suggestions</label>
                             <textarea name="suggestion" id="suggestion" class="form-control" rows="3"></textarea>
                         </div>
@@ -333,16 +333,35 @@
 
 <script>
 $(document).ready(function() {
-    // Initialize datepicker and timepicker
-    $("#date").datepicker({
-        dateFormat: "yy-mm-dd",
-        minDate: 0,
-        onSelect: function(dateText) {
-            console.log("Date selected: " + dateText);
-            // Update the timepicker when a date is selected
-            $("#time").timepicker('option', 'minTime', getMinTime());
-        }
-    });
+// Function to get tomorrow's date in yyyy-mm-dd format
+function getTomorrowDate() {
+    var today = new Date();
+    today.setDate(today.getDate() + 1); // Move to tomorrow
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; // January is 0!
+    var yyyy = today.getFullYear();
+
+    if (dd < 10) {
+        dd = '0' + dd;
+    }
+    if (mm < 10) {
+        mm = '0' + mm;
+    }
+
+    return yyyy + '-' + mm + '-' + dd;
+}
+
+// Initialize datepicker and timepicker
+$("#date").datepicker({
+    dateFormat: "yy-mm-dd",
+    minDate: getTomorrowDate(),  // Set minDate to tomorrow
+    onSelect: function(dateText) {
+        console.log("Date selected: " + dateText);
+        // Update the timepicker when a date is selected
+        $("#time").timepicker('option', 'minTime', getMinTime());
+    }
+});
+
 
     // Function to calculate current time + 2 hours and format it for the timepicker
     function getMinTime() {

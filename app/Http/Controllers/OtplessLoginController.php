@@ -234,8 +234,6 @@ class OtplessLoginController extends Controller
         // Validate the OTP length
         $validator = Validator::make($request->all(), [
             'otp' => 'required|digits:6', // Ensure OTP is exactly 6 digits
-            // 'device_id' => 'required|string', // Validate device_id
-            // 'platform' => 'required|string', // Validate platform
         ]);
     
         if ($validator->fails()) {
@@ -286,36 +284,47 @@ class OtplessLoginController extends Controller
                     [
                         'device_id' => $deviceId,
                         'platform' => $platform
-                    ], // Condition to find the existing record
-                    ['user_id' => $user->userid] // Data to update or create
+                    ], 
+                    ['user_id' => $user->userid] 
                 );
     
                 // Log the user in using the custom guard
                 Auth::guard('users')->login($user);
     
-                // Get the referer URL from the session
-                $referer = session()->get('login_referer', route('userindex'));
+                // Store the referer URL in the session if it's present in the request
+                if ($request->has('referer')) {
+                    session(['login_referer' => $request->input('referer')]);
+                }
     
-                // Decode the URL once
-                $referer = urldecode($referer);
-    
-                // Clear the referer from the session after using it
-                $request->session()->forget('login_referer');
-    
-                // Redirect to the referer URL or home page if not available
-                return redirect($referer)->with('success', 'User authenticated successfully.');
+                // Redirect the user after successful login
+                return $this->postLoginRedirect($request);
             } else {
-                return redirect()->back()->with('message', 'Wrong OTP. Please try again.');
+                return redirect()->back()->with('login_error_message', 'Wrong OTP. Please try again.');
             }
         } catch (RequestException $e) {
-            return redirect()->back()->with('message', 'Failed to verify OTP due to an error.');
+            return redirect()->back()->with('login_error_message', 'Failed to verify OTP due to an error.');
         }
     }
+    protected function postLoginRedirect(Request $request)
+    {
+        // Get the referer URL from the session
+        $referer = session()->get('login_referer', route('userindex'));
     
+        // Decode the referer URL once
+        $referer = urldecode($referer);
     
+        // Clear the referer from the session after using it
+        $request->session()->forget('login_referer');
     
-
+        // If the referer is the login page, redirect to home instead of the login page
+        if (url()->current() === route('userlogin')) {
+            return redirect()->route('userindex');
+        }
     
+        // Redirect to the referer URL or home page if not available
+        return redirect($referer)->with('login_success', 'User authenticated successfully.');
+    }
+        
 }
 
 

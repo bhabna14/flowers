@@ -211,16 +211,15 @@
                           </p>
                         
                           @if(Auth::guard('users')->check())
-                            <!-- User is logged in -->
                             <a href="{{ route('checkout', ['product_id' => $product->product_id]) }}" class="btn btn-gradient w-100 mt-2">
                                 Order Now
                             </a>
-                          @else
-                              <!-- User is not logged in -->
-                              <a href="{{route('userlogin', ['referer' => urlencode(url()->current())]) }}" class="btn btn-gradient w-100 mt-2">
-                                  Order Now
-                              </a>
-                          @endif
+                        @else
+                            <a href="{{ route('userlogin', ['referer' => urlencode(route('checkout', ['product_id' => $product->product_id]))]) }}" class="btn btn-gradient w-100 mt-2">
+                                Order Now
+                            </a>
+                        @endif
+
                       
                       </div>
                   </div>
