@@ -48,7 +48,7 @@
         transition: transform 0.3s;
     }
     
-    .product-image-container:hover .product-image {
+    .product-image-container:hover .product-image1 {
         transform: scale(1.1);
     }
     
@@ -164,7 +164,7 @@
     justify-content: center;
     border: 1px solid #e7dfdf;
     padding: 30px 0px;">
-                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: cover; border-radius:5px;">
+                <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="img-fluid product-image1" style="max-height: 100%; max-width: 100%; object-fit: cover; border-radius:5px;">
             </div>
         </div>
         
