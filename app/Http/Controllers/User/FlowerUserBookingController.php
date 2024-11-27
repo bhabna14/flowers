@@ -63,7 +63,12 @@ class FlowerUserBookingController extends Controller
                         // dd($hashedPassword);
         return view("user/flower", compact('upcomingPoojas', 'otherpoojas', 'products', 'banners','customizedpps'));
     }
-    
+    public function productdetails($slug)
+    {
+        $product = FlowerProduct::where('slug', $slug)->firstOrFail();
+        return view('user.product-details', compact('product'));
+    }
+
     public function show($product_id)
     {
         // dd($product_id);

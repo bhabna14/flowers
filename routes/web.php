@@ -121,6 +121,8 @@ Route::controller(userController::class)->group(function() {
 Route::controller(FlowerUserBookingController::class)->group(function() {
         //flower routes
         Route::get('/', 'flower')->name('userindex');
+        Route::get('/product/{slug}', 'productdetails')->name('product.productdetails');
+
 });
 Route::group(['middleware' => ['auth:users']], function () {
     Route::controller(FlowerUserBookingController::class)->group(function() {

@@ -10,4 +10,7 @@ class FlowerProduct extends Model
     use HasFactory;
     protected $table = 'flower_products';
     protected $fillable = ['product_id','name','product_image', 'price','mrp', 'description', 'category', 'stock', 'duration','status'];
+
 }
+
+
