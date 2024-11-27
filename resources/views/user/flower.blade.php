@@ -283,7 +283,7 @@
             <div class="col-auto">
               <div class="sectionTitle text-white">
                 <h2 class="sectionTitle__title">Blessed Reviews</h2>
-                <p class=" sectionTitle__text mt-5 sm:mt-0">Hear how our expert pandits have enhanced spiritual experiences for our valued customers. Read their stories and feel the divine connection.</p>
+                <p class=" sectionTitle__text mt-5 sm:mt-0">Hear from our happy devotees who made their rituals extraordinary with 33crores!</p>
               </div>
             </div>
           </div>
@@ -294,7 +294,7 @@
               <div class="swiper-slide">
                 <div class="testimonials -type-1 bg-white rounded-4 pt-40 pb-30 px-40">
                   
-                  <p class="testimonials__text lh-18 fw-500 text-dark-1">I recently used 33Crores Pandit to book a pandit for my housewarming ceremony, and the experience was fantastic. The booking process was smooth and hassle-free. The pandit was highly knowledgeable and performed the rituals with great devotion and precision. I appreciated the punctuality and professionalism. Highly recommend this service!</p>
+                  <p class="testimonials__text lh-18 fw-500 text-dark-1">33crores has transformed my pooja preparations! The customized flower subscription is a blessing – fresh, vibrant, and delivered on time. It saves me the hassle of last-minute shopping and keeps my rituals stress-free. Truly a divine experience!</p>
   
                   <div class="pt-20 mt-28 border-top-light">
                     <div class="row x-gap-20 y-gap-20 items-center">
@@ -303,7 +303,7 @@
                       </div> --}}
   
                       <div class="col-auto">
-                        <div class="text-15 fw-500 lh-14">Sidhant Rout</div>
+                        <div class="text-15 fw-500 lh-14">— Anuradha Mohanty</div>
                         {{-- <div class="text-14 lh-14 text-light-1 mt-5">Web Designer</div> --}}
                       </div>
                     </div>
@@ -314,7 +314,7 @@
               <div class="swiper-slide">
                 <div class="testimonials -type-1 bg-white rounded-4 pt-40 pb-30 px-40">
                   
-                  <p class="testimonials__text lh-18 fw-500 text-dark-1">Booking a pandit for my daughter’s wedding through 33Crores Pandit was one of the best decisions. The website is user-friendly, and the customer service team is very responsive. The pandit arrived on time and conducted the ceremony beautifully, explaining the significance of each ritual. It was a truly memorable experience. Five stars!</p>
+                  <p class="testimonials__text lh-18 fw-500 text-dark-1">33crores has transformed my daily puja rituals! The flowers are always fresh and beautifully arranged, perfectly suited to each deity I worship. The convenience of having them delivered right to my doorstep has saved me so much time and effort. Their customer service is exceptional, always ready to help with any special requests. I feel more connected to my traditions thanks to 33crores!</p>
   
                   <div class="pt-20 mt-28 border-top-light">
                     <div class="row x-gap-20 y-gap-20 items-center">
@@ -323,7 +323,7 @@
                       </div> --}}
   
                       <div class="col-auto">
-                        <div class="text-15 fw-500 lh-14">Soumya Puhan</div>
+                        <div class="text-15 fw-500 lh-14">— Vishal Behera</div>
                         {{-- <div class="text-14 lh-14 text-light-1 mt-5">Web Designer</div> --}}
                       </div>
                     </div>
@@ -334,7 +334,7 @@
               <div class="swiper-slide">
                 <div class="testimonials -type-1 bg-white rounded-4 pt-40 pb-30 px-40">
                   
-                  <p class="testimonials__text lh-18 fw-500 text-dark-1">I used 33Crores Pandit to arrange a Navgraha Puja, and I couldn't be more satisfied. The whole process, from booking to the actual puja, was seamless. The pandit was extremely knowledgeable and performed the puja with utmost dedication. It was a great convenience to book online and have everything taken care of professionally.</p>
+                  <p class="testimonials__text lh-18 fw-500 text-dark-1">As someone who leads a busy life, 33crores’ flower subscription service has been a blessing. The timely deliveries ensure that my puja setups are always perfect, without any last-minute hassles. The attention to detail and the freshness of the blooms truly reflect the company’s dedication to their customers. I highly recommend 33crores to anyone looking to enhance their spiritual practices with ease and elegance!</p>
   
                   <div class="pt-20 mt-28 border-top-light">
                     <div class="row x-gap-20 y-gap-20 items-center">
@@ -343,7 +343,7 @@
                       </div> --}}
   
                       <div class="col-auto">
-                        <div class="text-15 fw-500 lh-14">Swati Das</div>
+                        <div class="text-15 fw-500 lh-14">— Madhuchanda Das</div>
                         {{-- <div class="text-14 lh-14 text-light-1 mt-5">Web Designer</div> --}}
                       </div>
                     </div>
@@ -396,31 +396,35 @@
   
   <section class="pt-60 custmer-count">
     <div class="container">
-        <div class="border-bottom-light pb-40">
-            <div class="row y-gap-30 justify-center text-center">
+        <div class=" pb-40">
+            <div class="row justify-center text-center" style="margin-top: 30px">
 
                 <div class="col-xl-3 col-6">
-                    <img src="{{ asset('front-assets/img/919f2cab-3b5c-46df-8121-1dbbea546f1e.png') }}" alt="image" width="50%">
-                    <div class="text-40 lg:text-30 lh-13 fw-600 counter">101</div>
-                    <div class="text-14 lh-14 text-light-1 mt-5 " style="text-transform: capitalize; ">Type of Pooja Listed</div>
+                    <img src="{{ asset('images/1.png') }}" alt="image" width="50%">
+                    {{-- <div class="text-40 lg:text-30 lh-13 fw-600 counter">101</div> --}}
+                    <div class="text-14 lh-14 text-light-1 mt-5 " style="text-transform: capitalize;font-size: 18px !important;
+    letter-spacing: 1px; ">Freshness Guaranteed</div>
                 </div>
 
                 <div class="col-xl-3 col-6">
-                  <img src="{{ asset('front-assets/img/customer.png') }}" alt="image" width="50%">
-                    <div class="text-40 lg:text-30 lh-13 fw-600 counter">791</div>
-                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize; ">Happy customers</div>
+                  <img src="{{ asset('images/2.png') }}" alt="image" width="50%">
+                    {{-- <div class="text-40 lg:text-30 lh-13 fw-600 counter">791</div> --}}
+                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize; font-size: 18px !important;
+    letter-spacing: 1px;">Customizable Plans</div>
                 </div>
 
                 <div class="col-xl-3 col-6">
-                  <img src="{{ asset('front-assets/img/PANDIT_JEE_LISTED-removebg-preview.png') }}" alt="image" width="50%">
-                    <div class="text-40 lg:text-30 lh-13 fw-600 counter">121</div>
-                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize; ">Pandti Jee Listed</div>
+                  <img src="{{ asset('images/3.png') }}" alt="image" width="50%">
+                    {{-- <div class="text-40 lg:text-30 lh-13 fw-600 counter">121</div> --}}
+                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize;font-size: 18px !important;
+    letter-spacing: 1px; ">Timely Delivery</div>
                 </div>
 
                 <div class="col-xl-3 col-6">
-                  <img src="{{ asset('front-assets/img/POOJA PERFORMED.png') }}" alt="image" width="50%">
-                    <div class="text-40 lg:text-30 lh-13 fw-600 counter">1491</div>
-                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize; ">Pooja performed</div>
+                  <img src="{{ asset('images/4.png') }}" alt="image" width="50%">
+                    {{-- <div class="text-40 lg:text-30 lh-13 fw-600 counter">1491</div> --}}
+                    <div class="text-14 lh-14 text-light-1 mt-5" style="text-transform: capitalize;font-size: 18px !important;
+    letter-spacing: 1px; ">Eco-Friendly Packaging</div>
                 </div>
 
             </div>
@@ -434,7 +438,7 @@
             <div class="row y-gap-30 items-center justify-between">
                 <div  class="col-xl-5 col-lg-6" data-aos="fade-up" data-aos-delay="500">
                     <h2 class="text-30 lh-15">Download the App</h2>
-                    <p class="text-dark-1 pr-40 lg:pr-0 mt-15 sm:mt-5">Stay connected and make your spiritual journey easier with our app. Book pandits, schedule pujas, and get updates on upcoming events all at your fingertips. Download now for a seamless and convenient experience!</p>
+                    <p class="text-dark-1 pr-40 lg:pr-0 mt-15 sm:mt-5">Simplify your spiritual rituals with our Fresh Pooja Flower Subscription App! Enjoy hassle-free access to fresh, handpicked flowers delivered straight to your doorstep. Personalize your subscription, track deliveries, and stay connected to tradition with ease. Download now and bring devotion to your fingertips!</p>
 
                     <div class="row y-gap-20 items-center pt-30 sm:pt-10">
                         <div class="col-auto">
@@ -464,7 +468,7 @@
                 </div>
 
                 <div  class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
-                    <img src="{{ asset('front-assets/img/Beige &amp; White Special Offer Discount Instagram Post.png') }}" alt="image">
+                    <img src="{{ asset('images/download.png') }}" alt="image">
                 </div>
             </div>
         </div>

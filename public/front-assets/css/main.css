@@ -916,10 +916,13 @@ p.blockquote:after {
 .custmer-count {
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
+  background-size: 100% 100%; /* Ensures the image fills the container */
   color: #fff;
-  background-image: url('../../front-assets/img/pooja_count1.png');
+  background-image: url('../../images/redbg.png');
+  padding: 60px 0px;
+  /* margin-top: 30px !important; */
 }
+
 [data-anim^='slide-'],
 [data-anim-child^='slide-'] {
   opacity: 0;
