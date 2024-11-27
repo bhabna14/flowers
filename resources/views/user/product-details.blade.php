@@ -102,11 +102,54 @@
       margin-bottom: 38px;
       letter-spacing: 1px;
     }
-    
+    .breadcrumb {
+    display: flex; /* Align items horizontally */
+    flex-wrap: wrap; /* Prevent overflow */
+    background-color: transparent; /* No background */
+    padding: 10px 0; /* Padding around breadcrumb */
+    margin-bottom: 20px; /* Spacing below breadcrumb */
+    font-size: 14px; /* Font size for readability */
+    list-style: none; /* Remove default bullet styling */
+}
+
+.breadcrumb > .breadcrumb-item {
+    display: inline; /* Keep items inline */
+}
+
+.breadcrumb > .breadcrumb-item + .breadcrumb-item::before {
+    content: "/"; /* Separator */
+    padding: 0 5px; /* Space around separator */
+    color: #6c757d; /* Muted color for separator */
+}
+
+.breadcrumb-item a {
+    color: #007bff; /* Link color */
+    text-decoration: none; /* No underline on links */
+    transition: color 0.3s ease; /* Smooth hover effect */
+}
+
+.breadcrumb-item a:hover {
+    color: #0056b3; /* Darker blue on hover */
+}
+
+.breadcrumb-item.active {
+    color: #000; /* Black for active item */
+    font-weight: bold; /* Bold text for active item */
+}
+
     </style>
 @endsection
 
 @section('content')
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url('/') }}" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ $product->name }}</li>
+        </ol>
+    </nav>
+</div>
+
 <div class="container mt-5 mb-5 pb-50 pt-10">
     <div class="row">
         <!-- Product Image Section -->
