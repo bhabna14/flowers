@@ -98,7 +98,7 @@
 .flower-package-heading h1{
   color: #000;
   text-align: center;
-  margin-bottom: 38px;
+ 
   letter-spacing: 1px;
 }
 
@@ -133,7 +133,9 @@
       <div class="col-md-12">
         <div class="flower-package-heading">
           <h1>Customized Flower</h1>
+          <img src="{{ asset('front-assets/img/general/hr.png')}}" alt="" class="border-bottom-img">
         </div>
+      
       </div>
     </div>
   
@@ -185,6 +187,8 @@
       <div class="col-md-12">
         <div class="flower-package-heading">
           <h1>Flower Package</h1>
+          <img src="{{ asset('front-assets/img/general/hr.png')}}" alt="" class="border-bottom-img">
+
         </div>
       </div>
     </div>
