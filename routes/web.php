@@ -153,12 +153,10 @@ Route::group(['middleware' => ['auth:users']], function () {
         Route::get('/manage-user-address', 'mnguseraddress')->name('mnguseraddress');
         Route::get('/useraddress/set-default/{id}', 'usersetDefault')->name('usersetDefaultAddress');
         Route::get('/user-add-address', 'useraddaddress')->name('useraddaddress');
-
+        Route::get('/get-apartments', 'getApartments')->name('get.apartments');
         Route::get('/useraddaddress', 'useraddfrontaddress')->name('useraddfrontaddress');
-
         Route::post('/saveuseraddress', 'saveuseraddress')->name('saveuseraddress');
         Route::post('/savefrontaddress', 'savefrontaddress')->name('savefrontaddress');
-
         Route::get('edituseraddress/{id}',  'edituseraddress')->name('edituseraddress');
         Route::post('updateuseraddress', 'updateuseraddress')->name('updateuseraddress');
         Route::get('removeaddress/{id}',  'removeAddress')->name('removeaddress');

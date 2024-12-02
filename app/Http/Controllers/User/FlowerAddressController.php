@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserAddress;
 use App\Models\Locality;
+use App\Models\Apartment;
+
 
 use Illuminate\Support\Facades\Http;
 
@@ -50,12 +52,14 @@ class FlowerAddressController extends Controller
     }
 
 
-    public function useraddaddress() {
-        $localities = Locality::where('status', 'active')->get();
-        return view('user.flower-address.add-user-address', compact('localities'));
+    public function useraddaddress()
+    {
+        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $apartments = Apartment::where('status', 'active')->get();
+    
+        return view('user.flower-address.add-user-address', compact('localities', 'apartments'));
     }
     
-
     public function saveuseraddress(Request $request)
     {
         $user = Auth::guard('users')->user();
@@ -75,6 +79,7 @@ class FlowerAddressController extends Controller
         $addressdata->area = $request->area;
         $addressdata->address_type = $request->address_type;
         $addressdata->locality = $request->locality;
+        $addressdata->apartment_id = $request->apartment_name;
         $addressdata->place_category = $request->place_category;
         $addressdata->apartment_flat_plot = $request->apartment_flat_plot;
         $addressdata->landmark = $request->landmark;
