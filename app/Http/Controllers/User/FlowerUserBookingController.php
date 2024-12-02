@@ -22,6 +22,7 @@ use App\Models\UserAddress;
 use App\Models\Profile;
 use App\Models\Poojadetails;
 use App\Models\Locality;
+use App\Models\Apartment;
 use App\Models\PoojaUnit;
 use App\Models\FlowerRequest;
 use App\Models\FlowerRequestItem;
@@ -76,18 +77,16 @@ class FlowerUserBookingController extends Controller
 
     public function show($product_id)
     {
-        // dd($product_id);
-        // Retrieve the product details by product_id
-        // $product = FlowerProduct::findOrFail($product_id);
-        
+       
         $product = FlowerProduct::where('product_id', $product_id)->firstOrFail();
-        $localities = Locality::where('status', 'active')->get();
+
+        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $apartments = Apartment::where('status', 'active')->get();
+    
         $user = Auth::guard('users')->user();
         $addresses = UserAddress::where('user_id', $user->userid)->where('status', 'active')->get();
-        // $addresses = UserAddress::where('user_id', $user->userid)->where('status', 'active')->get();
-
-        // Pass the product and subscription details to the view
-        return view('user.flower-subscription-checkout', compact('localities','product','addresses','user'));
+       
+        return view('user.flower-subscription-checkout', compact('localities','product','addresses','user','apartments'));
     }
 
     public function cutsomizedcheckout($product_id)
@@ -98,19 +97,20 @@ class FlowerUserBookingController extends Controller
         $singleflowers = FlowerProduct::where('status', 'active')
                         ->where('category', 'Flower')
                         ->get();
+                        
         $Poojaunits = PoojaUnit::where('status', 'active')
-                       
-                        ->get();
-        $localities = Locality::where('status', 'active')->get();
+        ->get();
+        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $apartments = Apartment::where('status', 'active')->get();
         $product = FlowerProduct::where('product_id', $product_id)->firstOrFail();
-       
         $user = Auth::guard('users')->user();
         $addresses = UserAddress::where('user_id', $user->userid)->where('status', 'active')->get();
         // $addresses = UserAddress::where('user_id', $user->userid)->where('status', 'active')->get();
 
         // Pass the product and subscription details to the view
-        return view('user.flower-customized-checkout', compact('Poojaunits','singleflowers','product','addresses','user','localities'));
+        return view('user.flower-customized-checkout', compact('Poojaunits','singleflowers','product','addresses','user','localities','apartments'));
     }
+    
     public function processBooking(Request $request)
     {
         // \Log::info('processBooking method called');

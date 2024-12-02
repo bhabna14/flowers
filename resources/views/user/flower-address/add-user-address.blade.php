@@ -230,7 +230,7 @@
         apartmentDropdown.innerHTML = '<option value="">Select Apartment</option>';
         filteredApartments.forEach(apartment => {
             const option = document.createElement('option');
-            option.value = apartment.id;
+            option.value = apartment.apartment_name;
             option.textContent = apartment.apartment_name;
             apartmentDropdown.appendChild(option);
         });

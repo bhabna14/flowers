@@ -128,7 +128,6 @@ Route::group(['middleware' => ['auth:users']], function () {
     Route::controller(FlowerUserBookingController::class)->group(function() {
       
         Route::get('/checkout/{product_id}',  'show')->name('checkout');
-
         Route::post('/booking/flower/subscription', 'processBooking')->name('booking.flower.subscription');
         Route::get('/subscription-history', 'subscriptionhistory')->name('subscription.history');
         Route::post('/subscription/{order_id}/pause',  'pause')->name('subscription.pause');
@@ -149,7 +148,6 @@ Route::group(['middleware' => ['auth:users']], function () {
     });
     Route::controller(FlowerAddressController::class)->group(function() {
       
-       
         Route::get('/manage-user-address', 'mnguseraddress')->name('mnguseraddress');
         Route::get('/useraddress/set-default/{id}', 'usersetDefault')->name('usersetDefaultAddress');
         Route::get('/user-add-address', 'useraddaddress')->name('useraddaddress');
@@ -161,19 +159,15 @@ Route::group(['middleware' => ['auth:users']], function () {
         Route::post('updateuseraddress', 'updateuseraddress')->name('updateuseraddress');
         Route::get('removeaddress/{id}',  'removeAddress')->name('removeaddress');
 
-
     });
 });
 //user middleware routes
 
 Route::group(['middleware' => ['auth:users']], function () {
         Route::controller(userController::class)->group(function() {
-
         Route::get('/user-dashboard', 'userdashboard')->name('userdashboard');
-        
         Route::get('/manage-address', 'mngaddress')->name('mngaddress');
         Route::get('/address/set-default/{id}', 'setDefault')->name('setDefaultAddress');
-
         Route::get('/addaddress', 'addfrontaddress')->name('addfrontaddress');
         Route::get('/add-address', 'addaddress')->name('addaddress');
         Route::post('/saveaddress', 'saveaddress')->name('saveaddress');

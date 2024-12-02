@@ -79,7 +79,7 @@ class FlowerAddressController extends Controller
         $addressdata->area = $request->area;
         $addressdata->address_type = $request->address_type;
         $addressdata->locality = $request->locality;
-        $addressdata->apartment_id = $request->apartment_name;
+        $addressdata->apartment_name = $request->apartment_name;
         $addressdata->place_category = $request->place_category;
         $addressdata->apartment_flat_plot = $request->apartment_flat_plot;
         $addressdata->landmark = $request->landmark;
@@ -110,6 +110,7 @@ class FlowerAddressController extends Controller
         $addressdata->state =$request->state;
         $addressdata->city =$request->city;
         $addressdata->pincode =$request->pincode;
+        $addressdata->apartment_name =$request->apartment_name;
         $addressdata->area =$request->area;
         $addressdata->address_type =$request->address_type;
         $addressdata->locality =$request->locality;
@@ -180,10 +181,23 @@ class FlowerAddressController extends Controller
     
     public function edituseraddress($id)
     {
-        $address = UserAddress::find($id);
-        $localities = Locality::all(); // Fetch all localities for the dropdown
-        return view('user.flower-address.edit-user-address', compact('address', 'localities'));
+        $address = UserAddress::find($id); // Retrieve the user address by ID
+        if (!$address) {
+            return redirect()->back()->with('error', 'Address not found.');
+        }
+    
+        // Fetch active localities
+        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+    
+        // Fetch apartments filtered by active status
+        $apartments = Apartment::where('status', 'active')
+            ->select('id', 'locality_id', 'apartment_name')
+            ->get();
+    
+        return view('user.flower-address.edit-user-address', compact('address', 'localities', 'apartments'));
     }
+    
+
     
     public function updateuseraddress(Request $request)
     {
@@ -197,6 +211,7 @@ class FlowerAddressController extends Controller
             $address->city =$request->city;
             $address->pincode =$request->pincode;
             $address->address_type =$request->address_type;
+            $address->apartment_name =$request->apartment_name;
             $address->locality =$request->locality;
             $address->place_category =$request->place_category;
             $address->apartment_flat_plot =$request->apartment_flat_plot;
