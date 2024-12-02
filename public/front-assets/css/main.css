@@ -630,12 +630,30 @@ p.blockquote:after {
 }
 .upcoming-bg {
   /* background-color: #B90B0B; */
-  background-image: url('../img/upcoming-pooja2.png');
+  /* background-image: url('../img/upcoming-pooja2.png');
   background-position: center;
   background-size: cover;
-  padding: 42px 0px 63px 0px;
+  padding: 42px 0px 63px 0px; */
+  position: relative;
+  width: 100%;
+  height: 100vh; 
   /* margin-top: 60px !important; */
 }
+/* .upcoming-bg {
+  
+  width: 100%;
+  height: 100vh; 
+} */
+
+.upcoming-bg iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .upcoming-event {
   background-color: #fff;
   margin-bottom: 25px;

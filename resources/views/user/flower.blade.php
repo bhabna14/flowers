@@ -239,46 +239,18 @@
 
 
 
-    <section class="upcoming-bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="upcoming-main-heading">
-                        <h1>Upcoming Pooja Calendar</h1>
-                        <p class="text-white">Discover and book upcoming pujas effortlessly with our online pandit booking service. Join us for spiritual ceremonies and secure your pandit today for a seamless experience.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                     @foreach ($upcomingPoojas as $upcomingPooja)
-                    <div class="upcoming-event" data-aos="fade-up" data-aos-delay="500">
-                        <div class="row">
-                            <div class="col-md-3">
-                               
-                                <div class="upcoming-event-img">
-                                    <img src="{{asset('assets/img/'.$upcomingPooja->pooja_photo)}}" alt="Avatar" class="image">
-                                   
-                                </div>
-                            </div>
-                          
-                            <div class="col-md-7">
-                               <div class="event-text">
-                                    <h4>{{$upcomingPooja->pooja_name}}</h4>
-                                    <h6>{{$upcomingPooja->short_description}}</h6>
-                                    <p><i class="fa fa-calendar-check-o" aria-hidden="true"></i>{{$upcomingPooja->pooja_date}}</p>
-                               </div>
-                            </div>
-                            <div class="col-md-2">
-                               
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                  
-                </div>
-            </div>
-        </div>
-    </section>
+<section class="upcoming-bg">
+  <div class="container">
+      <div class="row">
+          <!-- Embed YouTube Video with Full Coverage and Autoplay -->
+          <div class="col-12">
+            {{-- <iframe width="560" height="315" src="https://www.youtube.com/embed/UUMc1pkxLuI?si=hrBMJvMc_gu-Kax9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> --}}
+              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/UUMc1pkxLuI?autoplay=1&rel=0&showinfo=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+          </div>
+      </div>
+  </div>
+</section>
+
 
 
 
