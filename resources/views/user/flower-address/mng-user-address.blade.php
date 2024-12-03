@@ -110,7 +110,7 @@
 
                             <strong>City:</strong> {{ $address->city ?? ""}}<br>
                             <strong>State:</strong> {{ $address->state ?? ""}}<br>
-                            <strong>Pin Code:</strong> {{ $address->localityDetails->pincode ?? 'N/A' }}
+                            <strong>Pin Code:</strong> {{ $address->pincode ?? 'N/A' }}
                         </div>
                         <div class="action-btns">
                             <a href="{{route('edituseraddress', $address->id)}}">Edit</a> | 

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 /// controllers for pandit dashboards
 use App\Http\Controllers\Api\AreaController;
 use App\Http\Controllers\Api\BankController;
-// use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\CareersController;
 use App\Http\Controllers\Api\PodcastController;
@@ -22,9 +21,6 @@ use App\Http\Controllers\Api\CheckController;
 use App\Http\Controllers\Api\PoojaStatusController;
 use App\Http\Controllers\Api\FlowerBookingController;
 
-
-
-
 /// controllers for frontend pages 
 use App\Http\Controllers\Api\PanditController;
 use App\Http\Controllers\Api\PujaController;
@@ -36,17 +32,13 @@ use App\Http\Controllers\Api\ProductController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::get('/products', [ProductController::class, 'getActiveProducts']);
 Route::controller(PanditLoginController::class)->group(function() {
     Route::post('/pandit-send-otp',  'sendOtp');
     Route::post('/pandit-verify-otp', 'verifyOtp');
     Route::middleware('auth:sanctum')->post('/panditlogout','panditLogout');
 });
-
-// Route::controller(LoginController::class)->group(function() {
-//     Route::post('/pandit-send-otp',  'storeLoginData');
-//     Route::post('/pandit-verify-otp', 'checkOtp');
-// });
 
 Route::controller(AreaController::class)->group(function() {
     Route::get('/get-districts/{stateCode}', 'getDistrict');
@@ -66,11 +58,7 @@ Route::controller(ProfileController::class)->group(function() {
     Route::get('/show-profile-details', 'showProfileDetails');
     Route::middleware('auth:sanctum')->get('/edit-profile',  'editProfile');
     Route::middleware('auth:sanctum')->post('/update-photo','updatePhoto');
-
-
 });
-
-
 
 Route::controller(CareersController::class)->group(function() {
     Route::post('/career/save', 'saveCareer');
@@ -85,21 +73,15 @@ Route::controller(PoojaDetailsController::class)->group(function() {
     Route::get('/poojadetails','getPoojaDetails');
     Route::post('/save-pooja-details',  'savePoojadetails');
     Route::get('/managepoojadetails',  'managePoojaDetails');
-    // Route::post('/updatePoojadetails', 'updatePoojadetails');
     Route::get('/get-pooja-details/{id}','getSinglePoojadetails');
     Route::post('/update-pooja-details/{id}', 'updatePoojadetails');
     Route::post('/delete-pooja/{pooja_id}', 'deletePoojaDetails');
-
-
 });
 
 Route::controller(PoojaListController::class)->group(function() {
     Route::get('/all-pooja-list', 'AllPoojaList');
-   
     Route::middleware('auth:sanctum')->get('/pooja-item-list', 'poojaitemlist');
-    
     Route::get('/approved-pooja', 'approvedPoojaList');
-    
     // did by bhabna
     Route::get('/list-pooja-item', 'listofitem');
     Route::get('/pooja-item-list/{pooja_id}', 'poojaitemlist');
@@ -178,7 +160,8 @@ Route::middleware('auth:sanctum')->get('/mngaddress', [UserProfileController::cl
 Route::get('/localities', [UserProfileController::class, 'getActiveLocalities']);
 
 Route::get('/promonations', [UserProfileController::class, 'managepromonation'])->name('api.managepromonations');
-Route::middleware('auth:sanctum')->post('/saveaddress', [UserProfileController::class, 'saveAddress']);
+
+Route::middleware('auth:sanctum')->post('/saveaddress', [UserProfileController::class, 'saveUserAddressAPI']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-address', [UserProfileController::class, 'updateAddress']);
 });

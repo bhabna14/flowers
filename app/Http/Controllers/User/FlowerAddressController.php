@@ -9,7 +9,6 @@ use App\Models\UserAddress;
 use App\Models\Locality;
 use App\Models\Apartment;
 
-
 use Illuminate\Support\Facades\Http;
 
 class FlowerAddressController extends Controller
@@ -178,7 +177,7 @@ class FlowerAddressController extends Controller
             return redirect()->back()->with('error', 'Address not found.');
         }
     }
-    
+
     public function edituseraddress($id)
     {
         $address = UserAddress::find($id); // Retrieve the user address by ID

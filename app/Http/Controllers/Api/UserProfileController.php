@@ -394,47 +394,53 @@ public function deletePhoto()
             'addressData' => $addressData
         ], 200);
     }
-    
-   public function saveAddress(Request $request)
+
+    public function saveUserAddressAPI(Request $request)
 {
-    $user = Auth::guard('api')->user();
-
-    if (!$user) {
-        return response()->json(['message' => 'User not authenticated'], 401);
-    }
-
     try {
-        // Create new UserAddress instance and populate data
-        $addressData = new UserAddress();
-        $addressData->user_id = $user->userid;
-        $addressData->country = $request->input('country');
-        $addressData->state = $request->input('state');
-        $addressData->city = $request->input('city');
-        $addressData->pincode = $request->input('pincode');
-        $addressData->area = $request->input('area');
-        $addressData->address_type = $request->input('address_type');
-        $addressData->locality = $request->input('locality');
-        $addressData->place_category = $request->input('place_category');
-        $addressData->apartment_flat_plot = $request->input('apartment_flat_plot');
-        $addressData->landmark = $request->input('landmark');
-        $addressData->status = 'active';
+        $user = Auth::guard('api')->user();
 
-        // Attempt to save the address
-        $addressData->save();
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
-        return response()->json([
-            'success' => 200,
-            'message' => 'Address created successfully'
-        ], 200);
+        $userid = $user->userid;
+
+        // Check if the user already has addresses
+        $hasAddresses = UserAddress::where('user_id', $userid)
+                                    ->where('status', 'active')
+                                    ->exists();
+
+        // Create the new address
+        $addressdata = new UserAddress();
+        $addressdata->user_id = $userid;
+        $addressdata->country = 'India';
+        $addressdata->state = $request->state;
+        $addressdata->city = $request->city;
+        $addressdata->pincode = $request->pincode;
+        $addressdata->area = $request->area;
+        $addressdata->address_type = $request->address_type;
+        $addressdata->locality = $request->locality;
+        $addressdata->apartment_name = $request->apartment_name;
+        $addressdata->place_category = $request->place_category;
+        $addressdata->apartment_flat_plot = $request->apartment_flat_plot;
+        $addressdata->landmark = $request->landmark;
+        $addressdata->status = 'active';
+
+        // Set as default if it's the first address
+        if (!$hasAddresses) {
+            $addressdata->default = 1;
+        }
+
+        $addressdata->save();
+
+        return response()->json(['success' => 'Address created successfully.', 'data' => $addressdata], 201);
     } catch (\Exception $e) {
-        // Handle any errors that occur during the save operation
-        return response()->json([
-            'error' => 500,
-            'message' => 'Failed to save the address. Error: ' . $e->getMessage()
-        ], 500);
+        return response()->json(['error' => 'Something went wrong', 'message' => $e->getMessage()], 500);
     }
 }
 
+    
 
     // public function removeAddress($id)
     // {
@@ -494,10 +500,11 @@ public function deletePhoto()
                 $address->country = $request->country;
                 $address->state = $request->state;
                 $address->city = $request->city;
+                $address->locality = $request->locality;
+                $address->apartment_name = $request->apartment_name;
                 $address->pincode = $request->pincode;
                 $address->area = $request->area;
                 $address->address_type = $request->address_type;
-                $address->locality = $request->locality;
                 $address->place_category = $request->place_category;
                 $address->apartment_flat_plot = $request->apartment_flat_plot;
                 $address->landmark = $request->landmark;
