@@ -99,25 +99,41 @@ class FlowerAddressController extends Controller
         $user = Auth::guard('users')->user();
         $userid = $user->userid;
     
-        // Check if the user already has addresses
-        $hasAddresses = UserAddress::where('user_id', $userid)->where('status', 'active')->exists();
+        $apartmentName = $request->apartment_name;
     
-        // Create the new address
+        // If "Other Apartment" is selected, use the manually entered name
+        if ($apartmentName === 'other') {
+            $apartmentName = $request->other_apartment_name;
+    
+            // Check if the apartment exists, if not, create it
+            $apartment = Apartment::where('apartment_name', $apartmentName)->first();
+    
+            if (!$apartment) {
+                $apartment = Apartment::create([
+                    'locality_id' => $request->locality,
+                    'apartment_name' => $apartmentName,
+                ]);
+            }
+        }
+    
+        // Proceed with saving the address
         $addressdata = new UserAddress();
         $addressdata->user_id = $userid;
-        $addressdata->country ='India';
-        $addressdata->state =$request->state;
-        $addressdata->city =$request->city;
-        $addressdata->pincode =$request->pincode;
-        $addressdata->apartment_name =$request->apartment_name;
-        $addressdata->area =$request->area;
-        $addressdata->address_type =$request->address_type;
-        $addressdata->locality =$request->locality;
-        $addressdata->place_category =$request->place_category;
-        $addressdata->apartment_flat_plot =$request->apartment_flat_plot;
-        $addressdata->landmark =$request->landmark;
+        $addressdata->country = 'India';
+        $addressdata->state = $request->state;
+        $addressdata->city = $request->city;
+        $addressdata->pincode = $request->pincode;
+        $addressdata->apartment_name = $apartmentName; // Use resolved apartment name
+        $addressdata->area = $request->area;
+        $addressdata->address_type = $request->address_type;
+        $addressdata->locality = $request->locality;
+        $addressdata->place_category = $request->place_category;
+        $addressdata->apartment_flat_plot = $request->apartment_flat_plot;
+        $addressdata->landmark = $request->landmark;
         $addressdata->status = 'active';
+    
         // Set as default if it's the first address
+        $hasAddresses = UserAddress::where('user_id', $userid)->where('status', 'active')->exists();
         if (!$hasAddresses) {
             $addressdata->default = 1;
         }
@@ -129,11 +145,8 @@ class FlowerAddressController extends Controller
             \Log::error('Error saving address: ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error saving address.']);
         }
-        
-    
-      
-
     }
+    
     
     public function removeAddress($id)
     {

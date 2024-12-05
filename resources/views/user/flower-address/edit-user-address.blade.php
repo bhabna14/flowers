@@ -106,9 +106,9 @@
                                         <select class="form-control" id="locality" name="locality" required>
                                             <option value="">Select Locality</option>
                                             @foreach ($localities as $locality)
-                                                <option value="{{ $locality->id }}"
+                                                <option value="{{ $locality->unique_code }}"
                                                     data-pincode="{{ $locality->pincode }}"
-                                                    {{ $locality->id == $address->locality ? 'selected' : '' }}>
+                                                    {{ $locality->unique_code == $address->locality ? 'selected' : '' }}>
                                                     {{ $locality->locality_name }}
                                                 </option>
                                             @endforeach
@@ -210,7 +210,7 @@
         </script>
 
         <script>
-            document.getElementById('locality').addEventListener('change', function () {
+    document.getElementById('locality').addEventListener('change', function () {
     const selectedLocality = this.value;
     const apartmentDropdown = document.getElementById('apartment_name');
 

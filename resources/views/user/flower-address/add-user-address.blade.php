@@ -128,7 +128,7 @@
                                       <select class="form-control" id="locality" name="locality" required>
                                           <option value="">Select Locality</option>
                                           @foreach ($localities as $locality)
-                                              <option value="{{ $locality->id }}" data-pincode="{{ $locality->pincode }}">
+                                              <option value="{{ $locality->unique_code }}" data-pincode="{{ $locality->pincode }}">
                                                   {{ $locality->locality_name }}
                                               </option>
                                           @endforeach

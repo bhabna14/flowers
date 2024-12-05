@@ -255,41 +255,43 @@
                             <select class="form-control" id="locality" name="locality" required>
                                 <option value="">Select Locality</option>
                                 @foreach ($localities as $locality)
-                                    <option value="{{ $locality->id }}" data-pincode="{{ $locality->pincode }}">
+                                    <option value="{{ $locality->unique_code }}" data-pincode="{{ $locality->pincode }}">
                                         {{ $locality->locality_name }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-
                         <div class="col-md-4">
                             <label for="apartment_name">Apartment Name</label>
                             <select class="form-control" id="apartment_name" name="apartment_name" required>
                                 <option value="">Select Apartment</option>
+                                <option value="other">Other Apartment</option>
                             </select>
                         </div>
                         
-                        <div class="col-md-4">
-                            <label for="pincode" class="form-label">Pincode</label>
-                            <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Pincode" readonly>
+                        <div class="col-md-4" id="other_apartment_div" style="display: none;">
+                            <label for="other_apartment_name">Enter Apartment Name</label>
+                            <input type="text" class="form-control" id="other_apartment_name" name="other_apartment_name" placeholder="Enter Apartment Name">
                         </div>
-                    </div>
-                    <div class="row mt-2">
-                        <div class="col-md-6">
-                            <div class="form-group">
+                        
+                        
+                        <div class="row mt-2">
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label">Pincode</label>
+                                <input type="text" class="form-control" id="pincode" name="pincode" placeholder="Pincode" readonly>
+                            </div>
+                            <div class="col-md-4">
                                 <label for="exampleInputEmail1">Town/City</label>
                                 <input type="text" class="form-control" id="exampleInputEmail1" name="city" placeholder="Enter Town/City *" required>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">State</label>
+                            <div class="col-md-4">
+                                <label for="state">State</label>
                                 <select name="state" class="form-control" required>
                                     <option value="Odisha">Odisha</option>
                                 </select>
                             </div>
                         </div>
-                    </div>
+
                     <div class="row mt-2">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -613,7 +615,11 @@ $('#addressForm').on('submit', function (e) {
 
 
 <script>
-    const apartments = @json($apartments);
+      document.addEventListener("DOMContentLoaded", function () {
+    const apartments = @json($apartments); // Dynamic apartment data from the server
+    const apartmentDropdown = document.getElementById('apartment_name');
+    const otherApartmentDiv = document.getElementById('other_apartment_div');
+    const otherApartmentInput = document.getElementById('other_apartment_name');
 
     document.getElementById('locality').addEventListener('change', function () {
         const localityId = this.value; // Get selected locality ID
@@ -627,8 +633,10 @@ $('#addressForm').on('submit', function (e) {
         const filteredApartments = apartments.filter(apartment => apartment.locality_id == localityId);
 
         // Populate the apartment dropdown
-        const apartmentDropdown = document.getElementById('apartment_name');
-        apartmentDropdown.innerHTML = '<option value="">Select Apartment</option>'; // Reset dropdown
+        apartmentDropdown.innerHTML = `
+            <option value="">Select Apartment</option>
+            <option value="other">Other Apartment</option>
+        `; // Reset dropdown with default options
 
         filteredApartments.forEach(apartment => {
             const option = document.createElement('option');
@@ -637,6 +645,20 @@ $('#addressForm').on('submit', function (e) {
             apartmentDropdown.appendChild(option); // Add filtered apartments
         });
     });
+
+    // Toggle 'Other Apartment' input field
+    apartmentDropdown.addEventListener('change', function () {
+        if (this.value === 'other') {
+            otherApartmentDiv.style.display = 'block';
+            otherApartmentInput.required = true; // Make input required
+        } else {
+            otherApartmentDiv.style.display = 'none';
+            otherApartmentInput.value = ''; // Clear the input field
+            otherApartmentInput.required = false; // Remove required attribute
+        }
+    });
+});
+
 </script>
 
 @endsection
