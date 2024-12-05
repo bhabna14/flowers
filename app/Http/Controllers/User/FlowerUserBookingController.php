@@ -80,7 +80,7 @@ class FlowerUserBookingController extends Controller
        
         $product = FlowerProduct::where('product_id', $product_id)->firstOrFail();
 
-        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $localities = Locality::where('status', 'active')->select('unique_code', 'locality_name', 'pincode')->get();
         $apartments = Apartment::where('status', 'active')->get();
     
         $user = Auth::guard('users')->user();
@@ -100,7 +100,7 @@ class FlowerUserBookingController extends Controller
                         
         $Poojaunits = PoojaUnit::where('status', 'active')
         ->get();
-        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $localities = Locality::where('status', 'active')->select('unique_code', 'locality_name', 'pincode')->get();
         $apartments = Apartment::where('status', 'active')->get();
         $product = FlowerProduct::where('product_id', $product_id)->firstOrFail();
         $user = Auth::guard('users')->user();
