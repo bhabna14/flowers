@@ -35,6 +35,8 @@ use App\Mail\SubscriptionConfirmationMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 use Razorpay\Api\Api;
+
+// use Illuminate\Support\Facades\Log; // Log facade
 class FlowerUserBookingController extends Controller
 {
 
@@ -241,8 +243,7 @@ class FlowerUserBookingController extends Controller
     // }
      // Import Razorpay API
 
-     use Razorpay\Api\Api; // Import Razorpay API
-     use Illuminate\Support\Facades\Log; // Log facade
+    
      
      public function processBooking(Request $request)
      {
