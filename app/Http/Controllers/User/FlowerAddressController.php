@@ -53,7 +53,7 @@ class FlowerAddressController extends Controller
 
     public function useraddaddress()
     {
-        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $localities = Locality::where('status', 'active')->select('unique_code', 'locality_name', 'pincode')->get();
         $apartments = Apartment::where('status', 'active')->get();
     
         return view('user.flower-address.add-user-address', compact('localities', 'apartments'));
@@ -199,7 +199,7 @@ class FlowerAddressController extends Controller
         }
     
         // Fetch active localities
-        $localities = Locality::where('status', 'active')->select('id', 'locality_name', 'pincode')->get();
+        $localities = Locality::where('status', 'active')->select('unique_code', 'locality_name', 'pincode')->get();
     
         // Fetch apartments filtered by active status
         $apartments = Apartment::where('status', 'active')
