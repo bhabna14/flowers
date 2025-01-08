@@ -34,7 +34,9 @@ use App\Mail\SubscriptionConfirmationMail;
 
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use Razorpay\Api\Api;
 
+// use Illuminate\Support\Facades\Log; // Log facade
 class FlowerUserBookingController extends Controller
 {
 
@@ -111,135 +113,277 @@ class FlowerUserBookingController extends Controller
         return view('user.flower-customized-checkout', compact('Poojaunits','singleflowers','product','addresses','user','localities','apartments'));
     }
     
-    public function processBooking(Request $request)
-    {
-        // \Log::info('processBooking method called');
+    // public function processBooking(Request $request)
+    // {
+    //     // \Log::info('processBooking method called');
     
-        // // Log received payment ID
-        // \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
+    //     // // Log received payment ID
+    //     // \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
     
-        $user = Auth::guard('users')->user();
-        // \Log::info('Authenticated user ID:', ['user_id' => $user->userid]);
+    //     $user = Auth::guard('users')->user();
+    //     // \Log::info('Authenticated user ID:', ['user_id' => $user->userid]);
     
-        // // Log the input data for verification
-        // \Log::info('Input data:', $request->all());
+    //     // // Log the input data for verification
+    //     // \Log::info('Input data:', $request->all());
     
-        $productId = $request->product_id; // Assuming you pass product_id in the form
+    //     $productId = $request->product_id; // Assuming you pass product_id in the form
         
-        $orderId = 'ORD-' . strtoupper(Str::random(12));
-        $addressId = $request->address_id;
-        $suggestion = $request->suggestion;
+    //     $orderId = 'ORD-' . strtoupper(Str::random(12));
+    //     $addressId = $request->address_id;
+    //     $suggestion = $request->suggestion;
     
-        // Log the order creation attempt
-        // \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
+    //     // Log the order creation attempt
+    //     // \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
     
-        // Create the order
-        try {
-            $order = Order::create([
-                'order_id' => $orderId,
-                'product_id' => $productId,
-                'user_id' => $user->userid,
-                'quantity' => 1,
-                'total_price' => $request->price,
-                'address_id' => $addressId,
-                'suggestion' => $suggestion,
-            ]);
-            // \Log::info('Order created successfully', ['order' => $order]);
-        } catch (\Exception $e) {
-            \Log::error('Failed to create order', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to create order');
-        }
+    //     // Create the order
+    //     try {
+    //         $order = Order::create([
+    //             'order_id' => $orderId,
+    //             'product_id' => $productId,
+    //             'user_id' => $user->userid,
+    //             'quantity' => 1,
+    //             'total_price' => $request->price,
+    //             'address_id' => $addressId,
+    //             'suggestion' => $suggestion,
+    //         ]);
+    //         // \Log::info('Order created successfully', ['order' => $order]);
+    //     } catch (\Exception $e) {
+    //         \Log::error('Failed to create order', ['error' => $e->getMessage()]);
+    //         return back()->with('error', 'Failed to create order');
+    //     }
     
-        // Calculate subscription start and end dates
-        $startDate = $request->start_date ? Carbon::parse($request->start_date) : now(); // Default to now if no start date is provided
-        $duration = $request->duration; // Duration is 1 for 30 days, 3 for 60 days, 6 for 90 days
+    //     // Calculate subscription start and end dates
+    //     $startDate = $request->start_date ? Carbon::parse($request->start_date) : now(); // Default to now if no start date is provided
+    //     $duration = $request->duration; // Duration is 1 for 30 days, 3 for 60 days, 6 for 90 days
     
-        // Calculate end date based on subscription duration
-        if ($duration == 1) {
-            $endDate = $startDate->copy()->addDays(29); // For 1, add 30 days
-        } else if ($duration == 3) {
-            $endDate = $startDate->copy()->addDays(89); // For 3, add 90 days
-        } else if ($duration == 6) {
-            $endDate = $startDate->copy()->addDays(179); // For 6, add 180 days
-        } else {
-            \Log::error('Invalid subscription duration', ['duration' => $duration]);
-            return back()->with('error', 'Invalid subscription duration');
-        }
+    //     // Calculate end date based on subscription duration
+    //     if ($duration == 1) {
+    //         $endDate = $startDate->copy()->addDays(29); // For 1, add 30 days
+    //     } else if ($duration == 3) {
+    //         $endDate = $startDate->copy()->addDays(89); // For 3, add 90 days
+    //     } else if ($duration == 6) {
+    //         $endDate = $startDate->copy()->addDays(179); // For 6, add 180 days
+    //     } else {
+    //         \Log::error('Invalid subscription duration', ['duration' => $duration]);
+    //         return back()->with('error', 'Invalid subscription duration');
+    //     }
     
-        // Log subscription creation
-        // \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
+    //     // Log subscription creation
+    //     // \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
     
-        // Create the subscription
-        $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
+    //     // Create the subscription
+    //     $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
     
-        // Get today's date to compare with start_date
-        $today = now()->format('Y-m-d');  // Format the date to match start_date format
+    //     // Get today's date to compare with start_date
+    //     $today = now()->format('Y-m-d');  // Format the date to match start_date format
     
-        // Determine the status based on the start_date
-        $status = ($startDate->format('Y-m-d') === $today) ? 'active' : 'pending';
+    //     // Determine the status based on the start_date
+    //     $status = ($startDate->format('Y-m-d') === $today) ? 'active' : 'pending';
     
-        try {
-            Subscription::create([
-                'subscription_id' => $subscriptionId,
-                'user_id' => $user->userid,
-                'order_id' => $orderId,
-                'product_id' => $productId,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'is_active' => true,
-                'status' => $status  // Set the status to 'active' or 'pending' based on the start date
-            ]);
-            // \Log::info('Subscription created successfully');
-        } catch (\Exception $e) {
-            \Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to create subscription');
-        }
+    //     try {
+    //         Subscription::create([
+    //             'subscription_id' => $subscriptionId,
+    //             'user_id' => $user->userid,
+    //             'order_id' => $orderId,
+    //             'product_id' => $productId,
+    //             'start_date' => $startDate,
+    //             'end_date' => $endDate,
+    //             'is_active' => true,
+    //             'status' => $status  // Set the status to 'active' or 'pending' based on the start date
+    //         ]);
+    //         // \Log::info('Subscription created successfully');
+    //     } catch (\Exception $e) {
+    //         \Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
+    //         return back()->with('error', 'Failed to create subscription');
+    //     }
     
-        // Process payment details and create payment record
-        try {
-            FlowerPayment::create([
-                'order_id' => $orderId,
-                'payment_id' => $request->payment_id,
-                'user_id' => $user->userid,
-                'payment_method' => "Razorpay",
-                'paid_amount' => $request->price,
-                'payment_status' => "paid",
-            ]);
-            // \Log::info('Payment recorded successfully');
-        } catch (\Exception $e) {
-            \Log::error('Failed to record payment', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to record payment');
-        }
-     // Fetch the complete order details
-     $order = Order::with(['flowerProduct', 'user', 'address.localityDetails', 'flowerPayments', 'subscription'])
-     ->where('order_id', $orderId)
-     ->first();
+    //     // Process payment details and create payment record
+    //     try {
+    //         FlowerPayment::create([
+    //             'order_id' => $orderId,
+    //             'payment_id' => $request->payment_id,
+    //             'user_id' => $user->userid,
+    //             'payment_method' => "Razorpay",
+    //             'paid_amount' => $request->price,
+    //             'payment_status' => "paid",
+    //         ]);
+    //         // \Log::info('Payment recorded successfully');
+    //     } catch (\Exception $e) {
+    //         \Log::error('Failed to record payment', ['error' => $e->getMessage()]);
+    //         return back()->with('error', 'Failed to record payment');
+    //     }
+    //  // Fetch the complete order details
+    //  $order = Order::with(['flowerProduct', 'user', 'address.localityDetails', 'flowerPayments', 'subscription'])
+    //  ->where('order_id', $orderId)
+    //  ->first();
 
-       if (!$order) {
-    //    \Log::error('Order not found for email sending');
-       return response()->json(['message' => 'Order not found'], 404);
-       }
+    //    if (!$order) {
+    // //    \Log::error('Order not found for email sending');
+    //    return response()->json(['message' => 'Order not found'], 404);
+    //    }
 
-       // Email recipients
-       $emails = [
-       'bhabana.samantara@33crores.com',
-       'pankaj.sial@33crores.com',
-       'basudha@33crores.com',
-       'priya@33crores.com',
-       'starleen@33crores.com'
-       ];
+    //    // Email recipients
+    //    $emails = [
+    //    'bhabana.samantara@33crores.com',
+    // //    'pankaj.sial@33crores.com',
+    // //    'basudha@33crores.com',
+    // //    'priya@33crores.com',
+    // //    'starleen@33crores.com'
+    //    ];
 
-       // Send the email
-       try {
-       Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
-    //    \Log::info('Order details email sent successfully', ['emails' => $emails]);
-       } catch (\Exception $e) {
-       \Log::error('Failed to send order details email', ['error' => $e->getMessage()]);
-       }
-        // Redirect or respond as needed
-        return redirect()->back()->with('success', 'Booking successful');
-    }
+    //    // Send the email
+    //    try {
+    //    Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
+    // //    \Log::info('Order details email sent successfully', ['emails' => $emails]);
+    //    } catch (\Exception $e) {
+    //    \Log::error('Failed to send order details email', ['error' => $e->getMessage()]);
+    //    }
+    //     // Redirect or respond as needed
+    //     return redirect()->back()->with('success', 'Booking successful');
+    // }
+     // Import Razorpay API
+
     
+     
+     public function processBooking(Request $request)
+     {
+         $user = Auth::guard('users')->user();
+         $productId = $request->product_id;
+         $orderId = 'ORD-' . strtoupper(Str::random(12));
+         $addressId = $request->address_id;
+         $suggestion = $request->suggestion;
+         $paymentId = $request->razorpay_payment_id; // Razorpay payment ID from frontend
+     
+         // Log initial request data
+         Log::info('Processing booking', [
+             'order_id' => $orderId,
+             'user_id' => $user->userid,
+             'payment_id' => $paymentId,
+             'total_price' => $request->price,
+             'address_id' => $addressId,
+             'suggestion' => $suggestion,
+         ]);
+     
+         try {
+             // Create the order
+             $order = Order::create([
+                 'order_id' => $orderId,
+                 'product_id' => $productId,
+                 'user_id' => $user->userid,
+                 'quantity' => 1,
+                 'total_price' => $request->price,
+                 'address_id' => $addressId,
+                 'suggestion' => $suggestion,
+             ]);
+             Log::info('Order created successfully', ['order_id' => $orderId]);
+         } catch (\Exception $e) {
+             Log::error('Failed to create order', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to create order');
+         }
+     
+         // Initialize Razorpay API
+         $razorpayApi = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
+     
+         try {
+             // Fetch the payment details from Razorpay
+             $payment = $razorpayApi->payment->fetch($paymentId);
+             
+             // Log the payment details
+             Log::info('Razorpay Payment fetched', [
+                 'payment_id' => $paymentId,
+                 'payment_status' => $payment->status,
+                 'amount' => $payment->amount,
+             ]);
+     
+             // Check if the payment is already captured
+             if ($payment->status == 'captured') {
+                 Log::info('Payment already captured', ['payment_id' => $paymentId]);
+             } else {
+                 // If payment is not captured, attempt to capture it
+                 $capture = $razorpayApi->payment->fetch($paymentId)->capture(['amount' => $payment->amount]);
+                 Log::info('Payment captured manually', [
+                     'payment_id' => $paymentId,
+                     'captured_status' => $capture->status
+                 ]);
+             }
+         } catch (\Exception $e) {
+             Log::error('Failed to capture payment', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to capture payment');
+         }
+     
+         // Calculate subscription start and end dates
+         $startDate = $request->start_date ? Carbon::parse($request->start_date) : now();
+         $duration = $request->duration;
+     
+         if ($duration == 1) {
+             $endDate = $startDate->copy()->addDays(29);
+         } else if ($duration == 3) {
+             $endDate = $startDate->copy()->addDays(89);
+         } else if ($duration == 6) {
+             $endDate = $startDate->copy()->addDays(179);
+         } else {
+             Log::error('Invalid subscription duration', ['duration' => $duration]);
+             return back()->with('error', 'Invalid subscription duration');
+         }
+     
+         $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
+         $today = now()->format('Y-m-d');
+         $status = ($startDate->format('Y-m-d') === $today) ? 'active' : 'pending';
+     
+         try {
+             Subscription::create([
+                 'subscription_id' => $subscriptionId,
+                 'user_id' => $user->userid,
+                 'order_id' => $orderId,
+                 'product_id' => $productId,
+                 'start_date' => $startDate,
+                 'end_date' => $endDate,
+                 'is_active' => true,
+                 'status' => $status
+             ]);
+             Log::info('Subscription created successfully', ['subscription_id' => $subscriptionId]);
+         } catch (\Exception $e) {
+             Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to create subscription');
+         }
+     
+         try {
+             FlowerPayment::create([
+                 'order_id' => $orderId,
+                 'payment_id' => $paymentId,
+                 'user_id' => $user->userid,
+                 'payment_method' => "Razorpay",
+                 'paid_amount' => $request->price,
+                 'payment_status' => "paid",
+             ]);
+             Log::info('Payment recorded successfully', ['payment_id' => $paymentId]);
+         } catch (\Exception $e) {
+             Log::error('Failed to record payment', ['error' => $e->getMessage()]);
+             return back()->with('error', 'Failed to record payment');
+         }
+     
+         // Send email
+         $order = Order::with(['flowerProduct', 'user', 'address.localityDetails', 'flowerPayments', 'subscription'])
+             ->where('order_id', $orderId)
+             ->first();
+     
+         if (!$order) {
+             Log::error('Order not found', ['order_id' => $orderId]);
+             return response()->json(['message' => 'Order not found'], 404);
+         }
+     
+         $emails = ['bhabana.samantara@33crores.com'];
+     
+         try {
+             Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
+             Log::info('Order confirmation email sent', ['order_id' => $orderId]);
+         } catch (\Exception $e) {
+             Log::error('Failed to send order details email', ['error' => $e->getMessage()]);
+         }
+     
+         return redirect()->back()->with('success', 'Your booking has been processed successfully');
+     }
+     
 
     // public function showSuccessPage($order_id)
     // {

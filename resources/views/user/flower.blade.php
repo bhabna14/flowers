@@ -146,7 +146,7 @@
               <div class="col-md-3 mb-4">
                 
                       <div class="product-image-container">
-                          <img src="{{ asset('storage/'.$customizedpp->product_image) }}" alt="{{ $customizedpp->name }}" class="product-image">
+                          <img src="{{ $customizedpp->product_image }}" alt="{{ $customizedpp->name }}" class="product-image">
                          
                       </div>
                     
@@ -201,7 +201,7 @@
 
                   <div class="product-card shadow-lg position-relative">
                       <div class="product-image-container">
-                          <img src="{{ asset('storage/'.$product->product_image) }}" alt="{{ $product->name }}" class="product-image">
+                          <img src="{{ $product->product_image }}" alt="{{ $product->name }}" class="product-image">
                          
                       </div>
                       <div class="card-body text-center">
@@ -245,7 +245,7 @@
           <!-- Embed YouTube Video with Full Coverage and Autoplay -->
           <div class="col-12">
             {{-- <iframe width="560" height="315" src="https://www.youtube.com/embed/UUMc1pkxLuI?si=hrBMJvMc_gu-Kax9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> --}}
-              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/UUMc1pkxLuI?autoplay=1&rel=0&showinfo=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/UUMc1pkxLuI?autoplay=1&rel=0&showinfo=0&modestbranding=1" frameborder="0"  allowfullscreen></iframe>
           </div>
       </div>
   </div>
