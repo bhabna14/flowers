@@ -265,7 +265,7 @@ class FlowerUserBookingController extends Controller
         $subscriptionsOrder = $subscriptionsOrder->map(function ($order) {
             if ($order->flowerProduct) {
                 // Ensure flowerProduct exists before accessing product_image
-                $order->flowerProduct->product_image_url = asset('storage/' . $order->flowerProduct->product_image); // Generate full URL for the photo
+                $order->flowerProduct->product_image_url = $order->flowerProduct->product_image; // Generate full URL for the photo
             }
             return $order;
         });
@@ -330,12 +330,9 @@ class FlowerUserBookingController extends Controller
         return view('user.user-flower-dashboard');
     }
 
-
-
     // customized order
     public function customizedstore(Request $request)
     {
-
        
         $user = Auth::guard('users')->user();
 
