@@ -24,8 +24,6 @@ class UpdatePausedSubscriptions extends Command
      *
      * @var string
      */
-    
-
     /**
      * Execute the console command.
      *
@@ -34,14 +32,20 @@ class UpdatePausedSubscriptions extends Command
     public function handle()
     {
         $today = Carbon::today();
+
+
+        // Update subscriptions to "paused" if today is the pause start date
+        Subscription::whereDate('pause_start_date', $today)
+            ->update(['status' => 'paused']);
+
     
         // Find paused subscriptions where the pause end date has passed
         $subscriptions = Subscription::where('status', 'paused')
-            ->where('pause_end_date', '<', $today->addDay()) // Check pause_end_date less than tomorrow
+            ->where('pause_end_date', $today->subDay())  // Check pause_end_date is yesterday
             ->get();
-    
+          
+
         foreach ($subscriptions as $subscription) {
-            // Update the status to active
             $subscription->status = 'active';
             $subscription->is_active = true;
             $subscription->pause_start_date = null;
