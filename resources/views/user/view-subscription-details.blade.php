@@ -323,10 +323,10 @@
                 <div class="address-value">
                     @if($order && $order->address)
                         <strong>Address:</strong>
-                        {{ $order->address->apartment_flat_plot ?? "" }},
-                        {{ $order->address->localityDetails->locality_name ?? "" }}<br>
-                        <strong>Landmark:</strong> {{ $order->address->landmark ?? "" }}<br>
-                        <strong>City:</strong> {{ $order->address->city ?? "" }}<br>
+                        {{ $order->order->apartment_flat_plot ?? "" }},
+                        {{ $order->order->localityDetails->locality_name ?? "" }}<br>
+                        <strong>Landmark:</strong> {{ $order->order->landmark ?? "" }}<br>
+                        <strong>City:</strong> {{ $order->order->city ?? "" }}<br>
                         <strong>State:</strong> {{ $order->address->state ?? "" }}<br>
                         <strong>Pin Code:</strong> {{ $order->address->pincode ?? "" }}
                     @else
