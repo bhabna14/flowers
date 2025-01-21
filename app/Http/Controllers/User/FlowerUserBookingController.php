@@ -40,6 +40,8 @@ use Razorpay\Api\Api;
 class FlowerUserBookingController extends Controller
 {
 
+  
+
     public function flower() {
         // Fetch banners from the external API
         $responseBanners = Http::get('https://pandit.33crores.com/api/app-banners');
@@ -66,10 +68,51 @@ class FlowerUserBookingController extends Controller
         $customizedpps = FlowerProduct::where('status', 'active')
                         ->where('category', 'Immediateproduct')
                         ->get();
-                        // $password = 'jagannath@1911@2024';
-                        // $hashedPassword = Hash::make($password);
-                        // dd($hashedPassword);
-        return view("user/flower", compact('upcomingPoojas', 'otherpoojas', 'products', 'banners','customizedpps'));
+                        $currentOrders = collect();
+
+        if (Auth::guard('users')->check()) {
+            $userId = Auth::guard('users')->user()->userid;
+        
+            // Fetch current orders with latest subscription for each order_id
+            $currentOrders = Order::whereNull('request_id')
+                ->where('user_id', $userId)
+                ->whereHas('subscription', function ($query) {
+                    $query->where('status', '!=', 'dead');
+                })
+                ->with([
+                    'subscription' => function ($query) {
+                        // Fetch only the latest subscription by order_id
+                        $query->orderBy('created_at', 'desc');
+                    },
+                    'flowerPayments',
+                    'user',
+                    'flowerProduct',
+                    'address.localityDetails',
+                    'pauseResumeLogs',
+                ])
+                ->orderBy('id', 'asc')
+                ->get();
+        
+            // Process the orders and subscriptions
+            $currentOrders = $currentOrders->map(function ($order) {
+                $subscription = $order->subscription;
+                if ($subscription) {
+                    // Set the correct end_date
+                    $subscription->display_end_date = $subscription->new_date ?? $subscription->end_date;
+        
+                    // Calculate remaining time
+                    $subscription->remaining_time = now()->diff($subscription->display_end_date);
+                }
+        
+                if ($order->flowerProduct) {
+                    $order->flowerProduct->product_image_url = $order->flowerProduct->product_image;
+                }
+        
+                return $order;
+            });
+        }
+                        
+        return view("user/flower", compact('upcomingPoojas', 'otherpoojas', 'products', 'banners','customizedpps','currentOrders'));
     }
     public function productdetails($slug)
     {
@@ -112,174 +155,66 @@ class FlowerUserBookingController extends Controller
         // Pass the product and subscription details to the view
         return view('user.flower-customized-checkout', compact('Poojaunits','singleflowers','product','addresses','user','localities','apartments'));
     }
-    
-    // public function processBooking(Request $request)
-    // {
-    //     // \Log::info('processBooking method called');
-    
-    //     // // Log received payment ID
-    //     // \Log::info('Received payment ID:', ['payment_id' => $request->payment_id]);
-    
-    //     $user = Auth::guard('users')->user();
-    //     // \Log::info('Authenticated user ID:', ['user_id' => $user->userid]);
-    
-    //     // // Log the input data for verification
-    //     // \Log::info('Input data:', $request->all());
-    
-    //     $productId = $request->product_id; // Assuming you pass product_id in the form
-        
-    //     $orderId = 'ORD-' . strtoupper(Str::random(12));
-    //     $addressId = $request->address_id;
-    //     $suggestion = $request->suggestion;
-    
-    //     // Log the order creation attempt
-    //     // \Log::info('Creating order', ['order_id' => $orderId, 'product_id' => $productId, 'user_id' => $user->userid, 'address_id' => $addressId]);
-    
-    //     // Create the order
-    //     try {
-    //         $order = Order::create([
-    //             'order_id' => $orderId,
-    //             'product_id' => $productId,
-    //             'user_id' => $user->userid,
-    //             'quantity' => 1,
-    //             'total_price' => $request->price,
-    //             'address_id' => $addressId,
-    //             'suggestion' => $suggestion,
-    //         ]);
-    //         // \Log::info('Order created successfully', ['order' => $order]);
-    //     } catch (\Exception $e) {
-    //         \Log::error('Failed to create order', ['error' => $e->getMessage()]);
-    //         return back()->with('error', 'Failed to create order');
-    //     }
-    
-    //     // Calculate subscription start and end dates
-    //     $startDate = $request->start_date ? Carbon::parse($request->start_date) : now(); // Default to now if no start date is provided
-    //     $duration = $request->duration; // Duration is 1 for 30 days, 3 for 60 days, 6 for 90 days
-    
-    //     // Calculate end date based on subscription duration
-    //     if ($duration == 1) {
-    //         $endDate = $startDate->copy()->addDays(29); // For 1, add 30 days
-    //     } else if ($duration == 3) {
-    //         $endDate = $startDate->copy()->addDays(89); // For 3, add 90 days
-    //     } else if ($duration == 6) {
-    //         $endDate = $startDate->copy()->addDays(179); // For 6, add 180 days
-    //     } else {
-    //         \Log::error('Invalid subscription duration', ['duration' => $duration]);
-    //         return back()->with('error', 'Invalid subscription duration');
-    //     }
-    
-    //     // Log subscription creation
-    //     // \Log::info('Creating subscription', ['user_id' => $user->userid, 'product_id' => $productId, 'start_date' => $startDate, 'end_date' => $endDate]);
-    
-    //     // Create the subscription
-    //     $subscriptionId = 'SUB-' . strtoupper(Str::random(12));
-    
-    //     // Get today's date to compare with start_date
-    //     $today = now()->format('Y-m-d');  // Format the date to match start_date format
-    
-    //     // Determine the status based on the start_date
-    //     $status = ($startDate->format('Y-m-d') === $today) ? 'active' : 'pending';
-    
-    //     try {
-    //         Subscription::create([
-    //             'subscription_id' => $subscriptionId,
-    //             'user_id' => $user->userid,
-    //             'order_id' => $orderId,
-    //             'product_id' => $productId,
-    //             'start_date' => $startDate,
-    //             'end_date' => $endDate,
-    //             'is_active' => true,
-    //             'status' => $status  // Set the status to 'active' or 'pending' based on the start date
-    //         ]);
-    //         // \Log::info('Subscription created successfully');
-    //     } catch (\Exception $e) {
-    //         \Log::error('Failed to create subscription', ['error' => $e->getMessage()]);
-    //         return back()->with('error', 'Failed to create subscription');
-    //     }
-    
-    //     // Process payment details and create payment record
-    //     try {
-    //         FlowerPayment::create([
-    //             'order_id' => $orderId,
-    //             'payment_id' => $request->payment_id,
-    //             'user_id' => $user->userid,
-    //             'payment_method' => "Razorpay",
-    //             'paid_amount' => $request->price,
-    //             'payment_status' => "paid",
-    //         ]);
-    //         // \Log::info('Payment recorded successfully');
-    //     } catch (\Exception $e) {
-    //         \Log::error('Failed to record payment', ['error' => $e->getMessage()]);
-    //         return back()->with('error', 'Failed to record payment');
-    //     }
-    //  // Fetch the complete order details
-    //  $order = Order::with(['flowerProduct', 'user', 'address.localityDetails', 'flowerPayments', 'subscription'])
-    //  ->where('order_id', $orderId)
-    //  ->first();
 
-    //    if (!$order) {
-    // //    \Log::error('Order not found for email sending');
-    //    return response()->json(['message' => 'Order not found'], 404);
-    //    }
-
-    //    // Email recipients
-    //    $emails = [
-    //    'bhabana.samantara@33crores.com',
-    // //    'pankaj.sial@33crores.com',
-    // //    'basudha@33crores.com',
-    // //    'priya@33crores.com',
-    // //    'starleen@33crores.com'
-    //    ];
-
-    //    // Send the email
-    //    try {
-    //    Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
-    // //    \Log::info('Order details email sent successfully', ['emails' => $emails]);
-    //    } catch (\Exception $e) {
-    //    \Log::error('Failed to send order details email', ['error' => $e->getMessage()]);
-    //    }
-    //     // Redirect or respond as needed
-    //     return redirect()->back()->with('success', 'Booking successful');
-    // }
-     // Import Razorpay API
-
-    
-     
      public function processBooking(Request $request)
      {
-         $user = Auth::guard('users')->user();
-         $productId = $request->product_id;
-         $orderId = 'ORD-' . strtoupper(Str::random(12));
-         $addressId = $request->address_id;
-         $suggestion = $request->suggestion;
-         $paymentId = $request->razorpay_payment_id; // Razorpay payment ID from frontend
-     
-         // Log initial request data
-         Log::info('Processing booking', [
-             'order_id' => $orderId,
-             'user_id' => $user->userid,
-             'payment_id' => $paymentId,
-             'total_price' => $request->price,
-             'address_id' => $addressId,
-             'suggestion' => $suggestion,
-         ]);
-     
-         try {
-             // Create the order
-             $order = Order::create([
-                 'order_id' => $orderId,
-                 'product_id' => $productId,
-                 'user_id' => $user->userid,
-                 'quantity' => 1,
-                 'total_price' => $request->price,
-                 'address_id' => $addressId,
-                 'suggestion' => $suggestion,
-             ]);
-             Log::info('Order created successfully', ['order_id' => $orderId]);
-         } catch (\Exception $e) {
-             Log::error('Failed to create order', ['error' => $e->getMessage()]);
-             return back()->with('error', 'Failed to create order');
-         }
+        $orderId = $request->order_id; // Check if order_id is provided in the request
+        $user = Auth::guard('users')->user();
+        $productId = $request->product_id;
+        $addressId = $request->address_id;
+        $suggestion = $request->suggestion;
+        $paymentId = $request->razorpay_payment_id; // Razorpay payment ID from frontend
+        
+        // Log initial request data
+        Log::info('Processing booking', [
+            'order_id' => $orderId,
+            'user_id' => $user->userid,
+            'payment_id' => $paymentId,
+            'total_price' => $request->price,
+            'address_id' => $addressId,
+            'suggestion' => $suggestion,
+        ]);
+        
+        try {
+            if ($orderId) {
+                // Check if order exists in the database
+                $order = Order::where('order_id', $orderId)->first();
+        
+                if ($order) {
+                    // Update existing order
+                    $order->update([
+                        'product_id' => $productId,
+                        'user_id' => $user->userid,
+                        'quantity' => 1,
+                        'total_price' => $request->price,
+                        'address_id' => $addressId,
+                        'suggestion' => $suggestion,
+                    ]);
+                    Log::info('Order updated successfully', ['order_id' => $orderId]);
+                } else {
+                    Log::error('Order ID not found for update', ['order_id' => $orderId]);
+                    return back()->with('error', 'Failed to create order');
+                }
+            } else {
+                // Generate new order_id if not provided
+                $orderId = 'ORD-' . strtoupper(Str::random(12));
+                // Create a new order
+                $order = Order::create([
+                    'order_id' => $orderId,
+                    'product_id' => $productId,
+                    'user_id' => $user->userid,
+                    'quantity' => 1,
+                    'total_price' => $request->price,
+                    'address_id' => $addressId,
+                    'suggestion' => $suggestion,
+                ]);
+                Log::info('Order created successfully', ['order_id' => $orderId]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error processing order', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to create order');
+        }
+        
      
          // Initialize Razorpay API
          $razorpayApi = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
@@ -372,7 +307,7 @@ class FlowerUserBookingController extends Controller
              return response()->json(['message' => 'Order not found'], 404);
          }
      
-         $emails = ['bhabana.samantara@33crores.com'];
+         $emails = ['soumyapuhan22@gmail.com'];
      
          try {
              Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
@@ -383,55 +318,98 @@ class FlowerUserBookingController extends Controller
      
          return redirect()->back()->with('success', 'Your booking has been processed successfully');
      }
+    //  public function subscriptionHistory()
+    //  {
+    //      // Get the authenticated user's ID using the 'api' guard
+    //      $userId = Auth::guard('users')->user()->userid;
      
+    //      // Fetch all orders for the user with related data
+    //      $subscriptionsOrder = Order::where('user_id', $userId)
+    //          ->with([
+    //              'subscription' => function ($query) {
+    //                  $query->orderBy('created_at', 'desc'); // Order subscriptions by the latest
+    //              },
+    //              'flowerPayments',
+    //              'user',
+    //              'flowerProduct',
+    //              'address.localityDetails',
+    //              'pauseResumeLogs',
+    //          ])
+    //          ->orderBy('id', 'desc')
+    //          ->get();
+     
+    //      // Process each order to ensure all related subscriptions are attached
+    //      $subscriptionsOrder = $subscriptionsOrder->map(function ($order) {
+    //          // Ensure the flower product exists before accessing its image
+    //          if ($order->flowerProduct) {
+    //              $order->flowerProduct->product_image_url = $order->flowerProduct->product_image;
+    //          }
+     
+    //          // Attach all subscriptions associated with the order
+    //          $order->allSubscriptions = $order->subscription; // Get all subscriptions for the order
+     
+    //          return $order;
+    //      });
+     
+    //      // Pass all orders and their associated subscriptions to the view
+    //      return view('user.subscription-history', compact('subscriptionsOrder'));
+    //  }
 
-    // public function showSuccessPage($order_id)
-    // {
-    //     $booking = Order::with(['subscription', 'flowerPayments', 'user', 'flowerProduct', 'address'])->findOrFail($order_id);
-    //     // dd($booking);
-    //     return view('user.flower-booking-success', compact('booking'));
-    // }
 
+    public function subscriptionHistory()
+{
+    // Get the authenticated user's ID using the 'api' guard
+    $userId = Auth::guard('users')->user()->userid;
 
+    // Fetch all subscriptions for the user
+    $subscriptions = Subscription::where('user_id', $userId)
+        ->with([
+            'order', // To get associated orders if needed
+            'flowerProducts', // If you need product info related to subscriptions
+            'pauseResumeLog',
+            'flowerPayments',
+            'users',
+            
+        ])
+        ->orderBy('created_at', 'desc') // Order by latest subscription
+        ->get();
 
-    public function subscriptionhistory() {
-        // Get the authenticated user ID using the 'api' guard
-        $userId = Auth::guard('users')->user()->userid;
-    
-        // Fetch standalone orders for the authenticated user (orders without request_id)
-        $subscriptionsOrder = Order::whereNull('request_id')
-            ->where('user_id', $userId)
-            ->with(['subscription', 'flowerPayments', 'user', 'flowerProduct', 'address.localityDetails', 'pauseResumeLogs'])
-            ->orderBy('id', 'desc')
-            ->get();
-    
-        // Map to add the product_image_url to each order's flowerProduct
-        $subscriptionsOrder = $subscriptionsOrder->map(function ($order) {
-            if ($order->flowerProduct) {
-                // Ensure flowerProduct exists before accessing product_image
-                $order->flowerProduct->product_image_url = $order->flowerProduct->product_image; // Generate full URL for the photo
+        $subscriptions = $subscriptions->map(function ($subscription) {
+            if ($subscription->flowerProducts) {
+                // Add the image URL to the flower product
+                $subscription->flowerProducts->product_image_url = $subscription->flowerProducts->product_image;
             }
-            return $order;
-        });
     
-        // Pass the orders to the view
-        return view('user.subscription-history', compact('subscriptionsOrder'));
-    }
-    public function viewSubscriptionOrderDetails($order_id)
-    {
-        // Fetch the order details using the order_id
-        $order = Order::where('order_id', $order_id)
-            ->with(['subscription', 'flowerPayments', 'user', 'flowerProduct', 'address.localityDetails', 'pauseResumeLogs'])
-            ->firstOrFail(); // Ensure the order exists or fail
-        
-        // Add the product image URL
-        if ($order->flowerProduct) {
-            $order->flowerProduct->product_image_url = asset('storage/' . $order->flowerProduct->product_image);
-        }
+            return $subscription;
+        });
 
-        // Pass the order to the view
-        return view('user.view-subscription-details', compact('order'));
+    // Pass all subscriptions to the view
+    return view('user.subscription-history', compact('subscriptions'));
+}
+
+public function viewSubscriptionOrderDetails($subscription_id, $order_id)
+{
+    // Fetch the order details using the order_id
+    $order = Subscription::where('id', $subscription_id)
+        ->with([
+            'order' => function($query) use ($order_id) {
+                $query->where('order_id', $order_id);  // Filter orders by the provided order_id
+            },   
+            'flowerPayments',
+            'users',
+            'flowerProducts',
+            'pauseResumeLog',
+            'order.address'  // Load address through the order relation
+        ])
+        ->firstOrFail(); // Ensure the order exists or fail
+    
+    // Add the product image URL
+    if ($order->flowerProducts) {
+        $order->flowerProducts->product_image_url = asset($order->flowerProducts->product_image);
     }
+    // Pass the order to the view
+    return view('user.view-subscription-details', compact('order'));
+}
 
     public function requestedorderhistory(){
         $userId = Auth::guard('users')->user()->userid;
@@ -469,6 +447,7 @@ class FlowerUserBookingController extends Controller
 
     return view('user.view-requested-order-details', compact('requestedOrder'));
 }
+
 
     public function userflowerdashboard(){
         return view('user.user-flower-dashboard');
@@ -589,7 +568,7 @@ class FlowerUserBookingController extends Controller
     {
         try {
             // Find the subscription by order_id
-            $subscription = Subscription::where('order_id', $order_id)->firstOrFail();
+            $subscription = Subscription::where('order_id', $order_id)->where('status','active')->firstOrFail();
             
             // Validate input dates
             $pauseStartDate = Carbon::parse($request->pause_start_date);
@@ -608,7 +587,6 @@ class FlowerUserBookingController extends Controller
             $newEndDate = $currentEndDate->addDays($pausedDays);
 
             // Update the subscription status and new date field
-            $subscription->status = 'paused';
             $subscription->pause_start_date = $pauseStartDate;
             $subscription->pause_end_date = $pauseEndDate;
             $subscription->new_date = $newEndDate; // Update with recalculated end date
@@ -631,11 +609,9 @@ class FlowerUserBookingController extends Controller
             // Log the creation of the pause resume log
             Log::info('Pause resume log created successfully');
 
-            return response()->json([
-                'success' => 200,
-                'message' => 'Subscription paused successfully.',
-                'subscription' => $subscription
-            ], 200);    
+            return redirect()->route('subscription.history')->with('success', 'Subscription paused successfully.');
+
+   
         } catch (\Exception $e) {
             // Log any errors that occur during the process
             Log::error('Error pausing subscription', [
@@ -643,12 +619,9 @@ class FlowerUserBookingController extends Controller
                 'error_message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+            return redirect()->back()->with('error', 'An error occurred while pausing the subscription.');
 
-            return response()->json([
-                'success' => 500,
-                'message' => 'An error occurred while pausing the subscription.',
-                'error' => $e->getMessage()
-            ], 500);
+          
         }
     }
 
@@ -659,16 +632,16 @@ class FlowerUserBookingController extends Controller
             Log::info('Resume subscription request received.', ['order_id' => $order_id, 'request_data' => $request->all()]);
     
             // Find the subscription by order_id
-            $subscription = Subscription::where('order_id', $order_id)->firstOrFail();
+            $subscription = Subscription::where('order_id', $order_id)->where('status','paused')->firstOrFail();
             Log::info('Subscription found.', ['subscription' => $subscription]);
     
             // Validate that the subscription is currently paused
             if ($subscription->status !== 'paused') {
                 Log::warning('Subscription is not in a paused state.', ['subscription_status' => $subscription->status]);
-                return response()->json([
-                    'success' => 400,
-                    'message' => 'Subscription is not in a paused state.'
-                ], 400);
+               
+                return redirect()->back()->with('success', 'Subscription is not in a paused state.');
+
+                
             }
     
             // Parse the dates
@@ -687,10 +660,10 @@ class FlowerUserBookingController extends Controller
             // Ensure the resume date is within the pause period
             if ($resumeDate->lt($pauseStartDate) || $resumeDate->gt($pauseEndDate)) {
                 Log::warning('Resume date is outside the pause period.', ['resume_date' => $resumeDate]);
-                return response()->json([
-                    'success' => 400,
-                    'message' => 'Resume date must be within the pause period.'
-                ], 400);
+              
+
+                return redirect()->back()->with('success', 'Resume date must be within the pause period');
+
             }
     
             // Calculate the days actually paused until the resume date
@@ -736,23 +709,40 @@ class FlowerUserBookingController extends Controller
             ]);
     
             Log::info('Resume log created.', ['order_id' => $order_id]);
-    
-            return response()->json([
-                'success' => 200,
-                'message' => 'Subscription resumed successfully.',
-                'subscription' => $subscription
-            ], 200);
+
+            return redirect()->route('subscription.history')->with('success', 'Subscription resumed successfully.');
+
+
         } catch (\Exception $e) {
+
             Log::error('Error while resuming subscription.', ['order_id' => $order_id, 'error' => $e->getMessage()]);
-            return response()->json([
-                'success' => 500,
-                'message' => 'An error occurred while resuming the subscription.',
-                'error' => $e->getMessage()
-            ], 500);
+
+            return redirect()->back()->with('error', 'An error occurred while pausing the subscription.');
+
         }
     }
     
-    
+    public function pausePage($order_id)
+    {
+
+        $order = Subscription::where('order_id', $order_id)->firstOrFail();
+
+        return view('user.pause-resume' , [
+            'order' => $order,
+            'action' => 'pause',
+        ]);
+
+    }
+
+    public function resumePage($order_id)
+    {
+        $order = Subscription::where('order_id', $order_id)->firstOrFail();
+
+        return view('user.pause-resume', [
+            'order' => $order,
+            'action' => 'resume',
+        ]);
+    }
 
     
 }

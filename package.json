@@ -20,6 +20,7 @@
         "sass-loader": "^12.1.0"
     },
     "dependencies": {
-        "firebase": "^10.13.0"
+        "firebase": "^10.13.0",
+        "sweetalert2": "^11.15.10"
     }
 }

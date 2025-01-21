@@ -214,10 +214,10 @@
             <div class="order-summary-item">
               <div class="order-summary-label">User:</div>
               <div class="order-summary-value">
-                  @if (!empty($order->user->name))
-                      {{ $order->user->name }}
+                  @if (!empty($order->users->name))
+                      {{ $order->users->name }}
                   @else
-                      {{ $order->user->mobile_number }}
+                      {{ $order->users->mobile_number }}
                   @endif
               </div>
           </div>
@@ -228,8 +228,8 @@
                 <div class="order-summary-label">Status:</div>
                 <div class="order-summary-value">
                     <span class="badge 
-                        {{ $order->subscription->status === 'paused' ? 'badge-warning' : 'badge-success' }}">
-                        {{ ucfirst($order->subscription->status) }}
+                        {{ $order->status === 'paused' ? 'badge-warning' : 'badge-success' }}">
+                        {{ ucfirst($order->status) }}
                     </span>
                     <!-- Highlighted text for paused subscriptions -->
                     
@@ -239,33 +239,33 @@
             <!-- Subscription Start Date -->
             <div class="order-summary-item">
                 <div class="order-summary-label">Subscription Start Date:</div>
-                <div class="order-summary-value">{{ $order->subscription->start_date }}</div>
+                <div class="order-summary-value">{{ $order->start_date }}</div>
             </div>
     
             <!-- Subscription End Date -->
             <div class="order-summary-item">
                 <div class="order-summary-label">Subscription End Date:</div>
                 <div class="order-summary-value">
-                  @if ($order->subscription->new_date)
+                  @if ($order->new_date)
                       <span class="text-strike">
-                          {{ \Carbon\Carbon::parse($order->subscription->end_date)->format('Y-m-d') }}
+                          {{ \Carbon\Carbon::parse($order->end_date)->format('Y-m-d') }}
                       </span>
                       <span class="text-highlight ms-2">
-                          {{ \Carbon\Carbon::parse($order->subscription->new_date)->format('Y-m-d') }}
+                          {{ \Carbon\Carbon::parse($order->new_date)->format('Y-m-d') }}
                       </span>
                   @else
-                      {{ \Carbon\Carbon::parse($order->subscription->end_date)->format('Y-m-d') }}
+                      {{ \Carbon\Carbon::parse($order->end_date)->format('Y-m-d') }}
                   @endif
               </div>
               
             </div>
         </div>
-        @if ($order->subscription->status === 'paused')
+        @if ($order->status === 'paused')
                         <div class="highlighted-text mt-2">
                             <strong>Note:</strong> Your subscription is paused from 
-                            <span class="text-highlight">{{ \Carbon\Carbon::parse($order->subscription->pause_start_date)->format('Y-m-d') }}</span> 
+                            <span class="text-highlight">{{ \Carbon\Carbon::parse($order->pause_start_date)->format('Y-m-d') }}</span> 
                             to 
-                            <span class="text-highlight">{{ \Carbon\Carbon::parse($order->subscription->pause_end_date)->format('Y-m-d') }}</span>.
+                            <span class="text-highlight">{{ \Carbon\Carbon::parse($order->pause_end_date)->format('Y-m-d') }}</span>.
                         </div>
                     @endif
     </section>
@@ -280,14 +280,14 @@
           </div>
           <div class="product-details">
               <div class="product-image">
-                  <img src="{{ $order->flowerProduct->product_image_url }}" alt="Flower Product Image">
+                  <img src="{{ $order->flowerProducts->product_image_url }}" alt="Flower Product Image">
               </div>
               <div class="product-info">
                   <div class="product-name">
-                      <strong>{{ $order->flowerProduct->name }}</strong>
+                      <strong>{{ $order->flowerProducts->name }}</strong>
                   </div>
                   <div class="product-description">
-                      <p>{{ $order->flowerProduct->description ?? 'No description available.' }}</p>
+                      <p>{{ $order->flowerProducts->description ?? 'No description available.' }}</p>
                   </div>
               </div>
           </div>
@@ -313,28 +313,31 @@
           </div>
       </section>
   
-      <!-- Address Details Section -->
       <section class="address-details">
-          <div class="section-title">
-              <h2>Address Details</h2>
-          </div>
-          <div class="address-content">
-              <div class="address-item">
-                  <div class="address-label">Full Address:</div>
-                  <div class="address-value">
-                    <td>
-                      <strong>Address:</strong> {{ $order->address->apartment_flat_plot ?? "" }}, {{ $order->address->locality ?? "" }}<br>
-                      <strong>Landmark:</strong> {{ $order->address->landmark ?? "" }}<br>
-
-                      <strong>City:</strong> {{ $order->address->city ?? ""}}<br>
-                      <strong>State:</strong> {{ $order->address->state ?? ""}}<br>
-                      <strong>Pin Code:</strong> {{ $order->address->pincode ?? "" }}
-                  </td>
-                  </div>
-              </div>
-              
-          </div>
-      </section>
+        <div class="section-title">
+            <h2>Address Details</h2>
+        </div>
+        <div class="address-content">
+            <div class="address-item">
+                <div class="address-label">Full Address:</div>
+                <div class="address-value">
+                    @if($order && $order->address)
+                        <strong>Address:</strong>
+                        {{ $order->address->apartment_flat_plot ?? "" }},
+                        {{ $order->address->localityDetails->locality_name ?? "" }}<br>
+                        <strong>Landmark:</strong> {{ $order->address->landmark ?? "" }}<br>
+                        <strong>City:</strong> {{ $order->address->city ?? "" }}<br>
+                        <strong>State:</strong> {{ $order->address->state ?? "" }}<br>
+                        <strong>Pin Code:</strong> {{ $order->address->pincode ?? "" }}
+                    @else
+                        <p>No address details available.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
   </div>
   </div>
 </div>

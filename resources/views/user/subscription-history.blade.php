@@ -2,6 +2,9 @@
 
 
 @section('styles')
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
 <style>
   .rejected-status{
     margin-bottom: 20px;
@@ -218,7 +221,7 @@
           </div>
       @endif
 
-      @forelse ($subscriptionsOrder as $order)
+      @forelse ($subscriptions as $order)
 
       <div class="col-md-12">
             <div class="order-history-sec">
@@ -226,19 +229,19 @@
                     <div class="row">
                         <div class="col-md-3">
                             SUBSCRIPTION START DATE <br>
-                            {{ \Carbon\Carbon::parse($order->subscription->start_date)->format('Y-m-d') }} <!-- Subscription start date -->
+                            {{ \Carbon\Carbon::parse($order->start_date)->format('Y-m-d') }} <!-- Subscription start date -->
                         </div>
                         <div class="col-md-3">
                             SUBSCRIPTION END DATE <br>
-                            @if ($order->subscription->new_date)
+                            @if ($order->new_date)
                                 <span class="text-strike">
-                                    {{ \Carbon\Carbon::parse($order->subscription->end_date)->format('Y-m-d') }}
+                                    {{ \Carbon\Carbon::parse($order->end_date)->format('Y-m-d') }}
                                 </span>
                                 <span class="text-highlight ms-2">
-                                    {{ \Carbon\Carbon::parse($order->subscription->new_date)->format('Y-m-d') }}
+                                    {{ \Carbon\Carbon::parse($order->new_date)->format('Y-m-d') }}
                                 </span>
                             @else
-                                {{ \Carbon\Carbon::parse($order->subscription->end_date)->format('Y-m-d') }}
+                                {{ \Carbon\Carbon::parse($order->end_date)->format('Y-m-d') }}
                             @endif
                         </div>
                         
@@ -253,14 +256,14 @@
                         <div class="col-md-2 text-center" style="   ">
                          
                              
-                        @if($order->subscription->status === 'pending')
+                        @if($order->status === 'pending')
                             <span class="badge badge-warning">
                                 Your subscription has not started yet
                             </span>
                         @else
                             <span class="badge 
-                                {{ $order->subscription->status === 'active' ? 'badge-success' : ($order->subscription->status === 'paused' ? 'badge-danger' : 'badge-danger') }}">
-                                {{ ucfirst($order->subscription->status) }}
+                                {{ $order->status === 'active' ? 'badge-success' : ($order->status === 'paused' ? 'badge-danger' : 'badge-danger') }}">
+                                {{ ucfirst($order->status) }}
                             </span>
                         @endif
                         
@@ -272,90 +275,40 @@
                 </div>
                 <div class="row order-details-booking">
                     <div class="col-md-2">
-                        <img src="{{ $order->flowerProduct->product_image_url }}" alt="Product Image" /> <!-- Display product image -->
+                        <img src="{{ $order->flowerProducts->product_image_url }}" alt="Product Image" /> <!-- Display product image -->
                     </div>
                     <div class="col-md-7">
-                        <h6>{{ $order->flowerProduct->name }}</h6> <!-- Subscription name -->
-                        <p>{{ $order->flowerProduct->description }}</p> <!-- Subscription description -->
+                        <h6>{{ $order->flowerProducts->name }}</h6> <!-- Subscription name -->
+                        <p>{{ $order->flowerProducts->description }}</p> <!-- Subscription description -->
                     </div>
                     <div class="col-md-3">
-                        <a href="{{ route('subscription.details', ['order_id' => $order->order_id]) }}" class="button px-10 fw-400 text-14 pay-button-bg h-50 text-white">
+                        <a href="{{ route('subscription.details', ['subscription_id' => $order->id, 'order_id' => $order->order_id]) }}"
+                            class="button px-10 fw-400 text-14 pay-button-bg h-50 text-white">
                             View Details
-                         </a>
-                         
-                        
-                                            
-                        @if ($order->subscription->status == "active")
-                            <a href="javascript:void(0);" 
+                        </a>              
+                        @if ($order->status == "active")
+                            <a href="{{ route('subscription.pausepage', $order->order_id) }}" 
                             class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white pause-button" 
-                            style="margin-bottom: 10px; background-color: #c80100 !important;" 
-                            onclick="openPauseModal('{{ $order->subscription->start_date }}', '{{ $order->subscription->end_date }}')">
-                            Pause
+                            style="margin-bottom: 10px; background-color: #c80100 !important;" >
+                           Pause
                             </a>
-                        @elseif ($order->subscription->status == "paused")
-                            <a href="javascript:void(0);" 
+                        @elseif ($order->status == "paused")
+                            <a href="{{ route('subscription.resumepage', $order->order_id) }}" 
                             class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white resume-button" 
-                            style="margin-bottom: 10px; background-color: #c80100 !important;" 
-                            onclick="openResumeModal('{{ $order->subscription->pause_start_date }}', '{{ $order->subscription->pause_end_date }}')">
+                            style="margin-bottom: 10px; background-color: #c80100 !important;" >
+                          
                             Resume
                             </a>
                         @endif
-                    
-                        <!-- Pause Modal -->
-                        <div id="pauseModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close" onclick="closePauseModal()">&times;</span>
-                            <h2>Pause Subscription</h2>
-                            <form id="pauseForm">
-                                @csrf
-                                <input type="hidden" name="order_id" value="{{ $order->order_id }}">
-                                <div>
-                                    <label for="pause_start_date">Pause Start Date</label>
-                                    <input type="date" id="pause_start_date" name="pause_start_date" required>
-                                </div>
-                                <div>
-                                    <label for="pause_end_date">Pause End Date</label>
-                                    <input type="date" id="pause_end_date" name="pause_end_date" required>
-                                </div>
-                                <p class="text-muted">
-                                    Dates must be between <span id="subscriptionStart"></span> and <span id="subscriptionEnd"></span>.
-                                </p>
-                                <button type="submit" class="btn">Submit</button>
-                            </form>
-                        </div>
-                        </div>
-
-                        <!--- Resume Modal -->
-                       <!-- Resume Modal -->
-                        <div id="resumeModal" class="modal" style="display: none;">
-                            <div class="modal-content">
-                                <span class="close" onclick="closeModal('resumeModal')">&times;</span>
-                                <h2>Resume Subscription</h2>
-                                <form id="resumeForm">
-                                    @csrf
-                                    <!-- Resume Date Input -->
-                                    <label for="resume_date">Select Resume Date:</label>
-                                    <input type="date" id="resume_date" name="resume_date" required>
-                            
-                                    <!-- Hidden Order ID -->
-                                    <input type="hidden" name="order_id" id="order_id" value="{{ $order->order_id }}">
-                                    <button type="submit" class="btn">Resume</button>
-                                </form>
-                            </div>
-                        </div>
-
-
-                        
-
-
+                       
                     </div>
                 </div>
-                @if ($order->subscription->status === 'paused')
+                @if ($order->status === 'paused')
                 <div class="highlighted-text mt-2">
                     <strong>Note:</strong> Your subscription is paused from 
-                    <span class="text-highlight">{{ \Carbon\Carbon::parse($order->subscription->pause_start_date)->format('Y-m-d') }}</span> 
+                    <span class="text-highlight">{{ \Carbon\Carbon::parse($order->pause_start_date)->format('Y-m-d') }}</span> 
                     to 
-                    <span class="text-highlight">{{ \Carbon\Carbon::parse($order->subscription->pause_end_date)->format('Y-m-d') }}</span>.
+                    <span class="text-highlight">{{ \Carbon\Carbon::parse($order->pause_end_date)->format('Y-m-d') }}</span>.
                 </div>
             @endif
             </div>
@@ -372,182 +325,6 @@
 @endsection
 
 @section('scripts')
-<!-- Include SweetAlert2 CDN -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    // Open the modal and set the date range
-    function openPauseModal(startDate, endDate) {
-        const modal = document.getElementById('pauseModal');
-        const startDateField = document.getElementById('pause_start_date');
-        const endDateField = document.getElementById('pause_end_date');
-        const subscriptionStartText = document.getElementById('subscriptionStart');
-        const subscriptionEndText = document.getElementById('subscriptionEnd');
-        
-        // Set the date range text
-        subscriptionStartText.textContent = startDate;
-        subscriptionEndText.textContent = endDate;
-        
-        // Set the min and max attributes for the date fields
-        startDateField.setAttribute('min', startDate);
-        endDateField.setAttribute('min', startDate);
-        endDateField.setAttribute('max', endDate);
-        
-        // Display the modal
-        modal.style.display = "block";
-    }
-
-    // Close the modal
-    function closePauseModal() {
-        const modal = document.getElementById('pauseModal');
-        modal.style.display = "none";
-    }
-
-    // Handle form submission via AJAX
-    document.getElementById('pauseForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
-
-        const startDate = document.getElementById('pause_start_date').value;
-        const endDate = document.getElementById('pause_end_date').value;
-        const orderId = document.querySelector('input[name="order_id"]').value;
-
-        // Check if the dates are valid
-        if (startDate && endDate && startDate <= endDate) {
-            const formData = new FormData();
-            formData.append('pause_start_date', startDate);
-            formData.append('pause_end_date', endDate);
-            formData.append('order_id', orderId);
-            formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
-            // Make AJAX request to pause the subscription
-            fetch(`/subscription/${orderId}/pause`, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success === 200) {
-                    // SweetAlert success message
-                    Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    closePauseModal(); // Close the modal
-                    location.reload(); // Reload the page
-                });
-            }  else {
-                    // SweetAlert error message
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: data.message,
-                        confirmButtonText: 'OK'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error pausing subscription:', error);
-                // SweetAlert error message for unexpected issues
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'An error occurred while pausing the subscription.',
-                    confirmButtonText: 'OK'
-                });
-            });
-        } else {
-            // SweetAlert warning for invalid dates
-            Swal.fire({
-                icon: 'warning',
-                title: 'Invalid Dates!',
-                text: 'Please select valid dates.',
-                confirmButtonText: 'OK'
-            });
-        }
-    });
-</script>
-
-
-<script>
-    // Open the Resume Modal and set the pause dates
-    function openResumeModal(pauseStartDate, pauseEndDate) {
-        const modal = document.getElementById('resumeModal');
-        const resumeDateField = document.getElementById('resume_date');
-        
-        // Set the min and max for the resume date field
-        resumeDateField.setAttribute('min', pauseStartDate);
-        resumeDateField.setAttribute('max', pauseEndDate);
-
-        // Set the default date to the pause start date
-        resumeDateField.value = pauseStartDate;
-
-        // Display the modal
-        modal.style.display = "block";
-    }
-
-    // Close the Modal
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.style.display = "none";
-    }
-
-    // Handle form submission for resuming the subscription via AJAX
-    document.getElementById('resumeForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
-
-        const resumeDate = document.getElementById('resume_date').value; // Get the resume date
-        const orderId = document.getElementById('order_id').value; // Get the order ID
-
-        // Create form data
-        const formData = new FormData();
-        formData.append('resume_date', resumeDate);
-        formData.append('order_id', orderId);
-        formData.append('_token', document.querySelector('input[name="_token"]').value); // CSRF token
-
-        // Send the form data to the server using fetch
-        fetch(`/subscription/${orderId}/resume`, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success === 200) {
-                // SweetAlert success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                }).then(() => {
-                    closeModal('resumeModal'); // Close the modal
-                    location.reload(); // Reload the page after closing the modal
-                });
-
-            } else {
-                // SweetAlert error message
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: data.message,
-                    confirmButtonText: 'OK'
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error resuming subscription:', error);
-            // SweetAlert error message for unexpected issues
-            Swal.fire({
-                icon: 'error',
-                title: 'Error!',
-                text: 'An error occurred while resuming the subscription.',
-                confirmButtonText: 'OK'
-            });
-        });
-    });
-</script>
-
 
 
 

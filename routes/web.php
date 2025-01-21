@@ -70,53 +70,15 @@ Route::controller(FlowerRegistrationController::class)->group(function() {
 });
 Route::group(['middleware' => ['auth:users']], function () {
     Route::controller(FlowerRegistrationController::class)->group(function() {
-
-   
     });
 });
 ## user login
 Route::controller(userController::class)->group(function() {
-    // Route::get('/register', 'userregister')->name('user-register');
-    // Route::post('store', 'store')->name('store');
-    // Route::get('/', 'userindex')->name('userindex');
-   
-
-    // Route::get('/pandit-list', 'panditlist')->name('panditlist');
-
-    // Route::get('/pandits/{pooja_id}/{pandit_id}',  'list')->name('pandit.list');
-
-
-    // Route::get('/pooja-list', 'poojalist')->name('poojalist');
-    // Route::get('/pooja/{slug}', 'poojadetails')->name('pooja.show');
-    // Route::get('/pooja/{poojaSlug}/{panditSlug}', 'panditDetails')->name('pandit.details');
-
-    // Route::get('/our-pandit/{slug}', 'singlepanditDetails')->name('pandit.show');
-    // Route::get('/book-now/{panditSlug}/{poojaSlug}/{poojaFee}', 'bookNow')->name('book.now');
-    // Route::post('/booking/confirm',  'confirmBooking')->name('booking.confirm');
-    
-    // Route::get('/booking/success',  'bookingSuccess')->name('booking.success');
-    // Route::get('/pandit-details', 'panditetails')->name('panditdetails');
-    // Route::get('/book-now', 'booknow')->name('booknow');
-    // Route::get('/about-us', 'aboutus')->name('aboutus');
-    // Route::get('/contact', 'contact')->name('contact');
    
     Route::get('/userlogin', 'userlogin')->name('userlogin');
-    // Route::post('/save-userlogin', 'storeloginData')->name('user.login');
-    // Route::get('/userotp','showOtpForm')->name('user.otp');
-    // Route::post('/check-otp', 'checkuserotp')->name('check.userotp');
-    // Route::post('user/authenticate', 'userauthenticate')->name('userauthenticate');
+   
     Route::post('user/logout', 'userlogout')->name('userlogout');
-    // // Route::get('/search',  'search')->name('pandit.search');
-    // Route::get('/ajax-search',  'ajaxSearch')->name('pandit.ajaxSearch');
-    // Route::get('/ajax-search-pooja', 'ajaxSearchPooja')->name('pooja.ajaxSearchPooja');
-
-    // // Route::get('/search-pooja','searchPooja')->name('search.pooja');
-
-    // routes/web.php
-// Route::get('/poojas', 'fetchPoojas')->name('fetchPoojas');
-
-// Route::get('/register', 'userregister')->name('user-register');
-
+   
 });
 Route::controller(FlowerUserBookingController::class)->group(function() {
         //flower routes
@@ -128,12 +90,19 @@ Route::group(['middleware' => ['auth:users']], function () {
     Route::controller(FlowerUserBookingController::class)->group(function() {
       
         Route::get('/checkout/{product_id}',  'show')->name('checkout');
+        Route::get('/renew-checkout/{product_id}/{order_id}', 'show')->name('renew.checkout');
+
         Route::post('/booking/flower/subscription', 'processBooking')->name('booking.flower.subscription');
         Route::get('/subscription-history', 'subscriptionhistory')->name('subscription.history');
+        Route::get('/subscription/pause-page/{order_id}', 'pausePage')->name('subscription.pausepage');
+        Route::get('/subscription/resume-page/{order_id}',  'resumePage')->name('subscription.resumepage');
+        
         Route::post('/subscription/{order_id}/pause',  'pause')->name('subscription.pause');
         Route::post('/subscription/{order_id}/resume',  'resume')->name('subscription.resume');
+        Route::post('/subscription/{order_id}/renew',  'renew')->name('subscription.renew');
 
-        Route::get('/subscription-details/{order_id}',  'viewSubscriptionOrderDetails')->name('subscription.details');
+
+        Route::get('/subscription-details/{subscription_id}/{order_id}', 'viewSubscriptionOrderDetails')->name('subscription.details');
         // customized order route
         Route::get('/cutsomized-checkout/{product_id}',  'cutsomizedcheckout')->name('cutsomized-checkout');
 
@@ -268,6 +237,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::get('/active-subscriptions', [FlowerOrderController::class, 'showActiveSubscriptions'])->name('active.subscriptions');
     Route::get('/paused-subscriptions', [FlowerOrderController::class, 'showPausedSubscriptions'])->name('paused.subscriptions');
     Route::get('/orders-today', [FlowerOrderController::class, 'showOrdersToday'])->name('orders.today');
+    
     
 Route::get('/flower-orders/{id}', [FlowerOrderController::class, 'show'])->name('admin.orders.show');
     Route::controller(AdminController::class)->group(function() {

@@ -105,12 +105,14 @@
         </script>
          @endif
             <div class="col-md-7">
+
                 <form action="{{ route('booking.flower.subscription') }}" method="POST" id="bookingForm">
                     @csrf
                     <input type="hidden" name="duration" value="{{ $product->duration }}">
                     <input type="hidden" name="price" value="{{ $product->price }}">
                     <input type="hidden" name="product_id" value="{{ $product->product_id }}">
-                  
+                    <input type="hidden" name="order_id" value="{{ request()->order_id }}">
+
                 
                     <div class="row">
                         <div class="form-input mt-20 col-md-12"  style="margin-bottom: 0px !important">
@@ -171,7 +173,7 @@
                         <div class="row x-gap-15 y-gap-20">
                             <div class="col-auto">
                                 <!-- Display the product or pandit's photo -->
-                                <img src="{{ asset('storage/'.$product->product_image ?? 'default-image.jpg') }}" alt="Subscription Image" class="size-140 rounded-4 object-cover">
+                                <img src="{{ $product->product_image ?? 'default-image.jpg'}}" alt="Subscription Image" class="size-140 rounded-4 object-cover">
                             </div>
                             <div class="col">
                                 <div class="lh-17 fw-500">{{ $product->name }}</div>
@@ -506,7 +508,6 @@ $('#addressForm').on('submit', function (e) {
         }
     });
   </script>
-
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.getElementById('payButton').onclick = function (e) {
@@ -520,41 +521,46 @@ $('#addressForm').on('submit', function (e) {
         var addressId = form.querySelector('[name="address_id"]:checked');
         var suggestion = form.querySelector('[name="suggestion"]');
         var errorDate = form.querySelector('.error_date');
+        var isValid = true;
+
+        // Clear previous errors
+        errorDate.textContent = '';
     
-        // Validation logic
-      
+        // Validation for start date
         if (!startDate.value) {
-            displayError(errorDate, 'Please select a date.');
+            errorDate.textContent = 'Please select a date.';
             isValid = false;
-            return;
         }
     
         // Validation for address selection
         if (!addressId) {
             var addressSection = form.querySelector('.your-address-list');
-            displayError(addressSection, 'Please select an address.');
+            addressSection.insertAdjacentHTML('beforeend', '<div class="error_address">Please select an address.</div>');
             isValid = false;
+        }
+
+        // If the form is not valid, don't proceed with Razorpay
+        if (!isValid) {
+            console.log('Validation failed.');
             return;
         }
-        // if (suggestion && suggestion.value.trim() === "") {
-        //     alert('Please provide your suggestion or leave it blank.');
-        // }
-    
+
         console.log('Fields validated successfully. Initializing Razorpay...');
     
         var amount = {{ ($product->price) * 100 }}; // Amount in paise
     
         var options = {
             "key": "{{ config('services.razorpay.key') }}",
-            "amount": amount,
+            "amount": amount, // Amount in paise
             "name": "33 Crores",
             "description": "",
             "image": "{{ asset('front-assets/img/brand/logo.png') }}",
             "handler": function (response) {
                 console.log('Payment handler triggered.');
                 console.log('Payment ID:', response.razorpay_payment_id);
-    
+
                 // Add the Razorpay payment ID to the form and submit it
+                var form = document.getElementById('bookingForm');
                 if (form) {
                     console.log('Form found. Appending payment ID...');
                     form.appendChild(createHiddenInput('razorpay_payment_id', response.razorpay_payment_id));
@@ -570,13 +576,22 @@ $('#addressForm').on('submit', function (e) {
             },
             "theme": {
                 "color": "#F37254"
+            },
+            "modal": {
+                "ondismiss": function () {
+                    alert("Payment process was dismissed. Please try again.");
+                }
+            },
+            "error": function (response) {
+                console.error('Payment error: ', response);
+                alert("Payment could not be processed. Please try again.");
             }
         };
     
         var rzp1 = new Razorpay(options);
-        console.log('Opening Razorpay checkout...');
         rzp1.open();
     };
+
     
     function createHiddenInput(name, value) {
         var input = document.createElement('input');

@@ -93,7 +93,6 @@
                                         </div>
                                     </div>
                                 </div>
-                               
                             </div>
                             <div class="card-footer py-0">
                                 <div class="profile-tab tab-menu-heading border-bottom-0">
@@ -141,7 +140,6 @@
                                                                     <th>Address Details</th>
                                                                     <th>Total Price</th>
                                                                     <th>Status</th>
-                
                                                                     <th>Actions</th>
                                                                 </tr>
                                                             </thead>
