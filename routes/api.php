@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\PanditLoginController;
 use App\Http\Controllers\Api\CheckController;
 use App\Http\Controllers\Api\PoojaStatusController;
 use App\Http\Controllers\Api\FlowerBookingController;
+use App\Http\Controllers\Api\OrderController;
+
 
 /// controllers for frontend pages 
 use App\Http\Controllers\Api\PanditController;
@@ -39,6 +41,9 @@ Route::controller(PanditLoginController::class)->group(function() {
     Route::post('/pandit-verify-otp', 'verifyOtp');
     Route::middleware('auth:sanctum')->post('/panditlogout','panditLogout');
 });
+
+Route::middleware('auth:users')->get('/current-orders', [OrderController::class, 'getCurrentOrders']);
+
 
 Route::controller(AreaController::class)->group(function() {
     Route::get('/get-districts/{stateCode}', 'getDistrict');
