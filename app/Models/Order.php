@@ -48,7 +48,7 @@ public function flowerProduct()
 
 public function address()
 {
-    return $this->belongsTo(UserAddress::class, 'address_id');
+    return $this->belongsTo(UserAddress::class, 'address_id', 'id'); // Ensure 'id' is the primary key in user_addresses
 }
 
 public function pauseResumeLogs()

@@ -399,8 +399,8 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
             'users',
             'flowerProducts',
             'pauseResumeLog',
-            'order.address'  // Load address through the order relation
-        ])
+            'order.address.localityDetails'
+            ])
         ->firstOrFail(); // Ensure the order exists or fail
     
     // Add the product image URL
