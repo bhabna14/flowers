@@ -247,7 +247,7 @@
                         
                         <div class="col-md-2">
                             TOTAL PAYMENT <br>
-                            ₹ {{ number_format($order->total_price), 2 }} <!-- Total payment from flowerPayments -->
+                            ₹ {{ number_format($order->order->total_price), 2 }} <!-- Total payment from flowerPayments -->
                         </div>
                         <div class="col-md-2 text-right">
                             ORDER NUMBER <br>

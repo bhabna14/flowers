@@ -42,7 +42,6 @@ Route::controller(PanditLoginController::class)->group(function() {
     Route::middleware('auth:sanctum')->post('/panditlogout','panditLogout');
 });
 
-Route::middleware('auth:users')->get('/current-orders', [OrderController::class, 'getCurrentOrders']);
 
 
 Route::controller(AreaController::class)->group(function() {
