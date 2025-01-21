@@ -321,21 +321,18 @@
             <div class="address-item">
                 <div class="address-label">Full Address:</div>
                 <div class="address-value">
-                    @if($order && $order->address)
-                        <strong>Address:</strong>
-                        {{ $order->address->apartment_flat_plot ?? "" }},
-                        {{ $order->address->localityDetails->locality_name ?? "" }}<br>
-                        <strong>Landmark:</strong> {{ $order->address->landmark ?? "" }}<br>
-                        <strong>City:</strong> {{ $order->address->city ?? "" }}<br>
-                        <strong>State:</strong> {{ $order->address->state ?? "" }}<br>
-                        <strong>Pin Code:</strong> {{ $order->address->pincode ?? "" }}
-                    @else
-                        <p>No address details available.</p>
-                    @endif
+                    <strong>Address:</strong>
+                    {{ $order->order->address->apartment_flat_plot ?? "N/A" }},
+                    {{ $order->order->address->localityDetails->locality_name ?? "N/A" }}<br>
+                    <strong>Landmark:</strong> {{ $order->order->address->landmark ?? "N/A" }}<br>
+                    <strong>City:</strong> {{ $order->order->address->city ?? "N/A" }}<br>
+                    <strong>State:</strong> {{ $order->order->address->state ?? "N/A" }}<br>
+                    <strong>Pin Code:</strong> {{ $order->order->address->pincode ?? "N/A" }}
                 </div>
             </div>
         </div>
     </section>
+    
     
     
   </div>

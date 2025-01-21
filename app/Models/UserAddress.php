@@ -31,4 +31,6 @@ class UserAddress extends Model
     {
         return $this->belongsTo(Locality::class, 'locality', 'unique_code');
     }
+
+    
 }
