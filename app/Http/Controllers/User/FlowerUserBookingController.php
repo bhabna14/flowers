@@ -369,7 +369,6 @@ class FlowerUserBookingController extends Controller
             'pauseResumeLog',
             'flowerPayments',
             'users',
-            
         ])
         ->orderBy('created_at', 'desc') // Order by latest subscription
         ->get();

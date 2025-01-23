@@ -23,7 +23,7 @@ class SubscriptionPauseResumeLog extends Model
     // Relationship to Subscription model
     public function subscription()
     {
-        return $this->belongsTo(Subscription::class);
+        return $this->belongsTo(Subscription::class, 'subscription_id', 'subscription_id');
     }
     // app/Models/SubscriptionPauseResumeLog.php
 
