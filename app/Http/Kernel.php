@@ -72,6 +72,11 @@ class Kernel extends HttpKernel
 
     ];
 
+    protected $commands = [
+        \App\Console\Commands\ResumePausedSubscriptions::class,
+    ];
+    
+
  
 
 }

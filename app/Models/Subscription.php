@@ -47,7 +47,7 @@ public static function expireIfEnded()
 }
 public function pauseResumeLogs()
 {
-    return $this->hasMany(SubscriptionPauseResumeLog::class);
+    return $this->hasMany(SubscriptionPauseResumeLog::class, 'subscription_id');
 }
 
 public function order()
