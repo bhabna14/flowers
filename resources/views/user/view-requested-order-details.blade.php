@@ -200,7 +200,7 @@
                 <!-- Left Section: Product Details -->
                 <div class="col-lg-4 col-md-5">
                     <div class="product-image-wrapper">
-                        <img src="{{ asset('storage/' . $requestedOrder->flowerProduct->product_image) }}" alt="Product Image" class="rounded-8 w-100">
+                        <img src="{{$requestedOrder->flowerProduct->product_image }}" alt="Product Image" class="rounded-8 w-100">
                     </div>
                 </div>
 

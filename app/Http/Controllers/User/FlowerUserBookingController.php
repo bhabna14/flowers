@@ -40,8 +40,6 @@ use Razorpay\Api\Api;
 class FlowerUserBookingController extends Controller
 {
 
-  
-
     public function flower() {
         // Fetch banners from the external API
         $responseBanners = Http::get('https://pandit.33crores.com/api/app-banners');
@@ -307,8 +305,15 @@ class FlowerUserBookingController extends Controller
              return response()->json(['message' => 'Order not found'], 404);
          }
      
-         $emails = ['soumyapuhan22@gmail.com'];
-     
+
+         $emails = [
+            'soumyaranjan.puhan@33crores.com',
+            'pankaj.sial@33crores.com',
+            'basudha@33crores.com',
+            'priya@33crores.com',
+            'starleen@33crores.com'
+        ];
+         
          try {
              Mail::to($emails)->send(new SubscriptionConfirmationMail($order));
              Log::info('Order confirmation email sent', ['order_id' => $orderId]);
@@ -318,44 +323,7 @@ class FlowerUserBookingController extends Controller
      
          return redirect()->back()->with('success', 'Your booking has been processed successfully');
      }
-    //  public function subscriptionHistory()
-    //  {
-    //      // Get the authenticated user's ID using the 'api' guard
-    //      $userId = Auth::guard('users')->user()->userid;
-     
-    //      // Fetch all orders for the user with related data
-    //      $subscriptionsOrder = Order::where('user_id', $userId)
-    //          ->with([
-    //              'subscription' => function ($query) {
-    //                  $query->orderBy('created_at', 'desc'); // Order subscriptions by the latest
-    //              },
-    //              'flowerPayments',
-    //              'user',
-    //              'flowerProduct',
-    //              'address.localityDetails',
-    //              'pauseResumeLogs',
-    //          ])
-    //          ->orderBy('id', 'desc')
-    //          ->get();
-     
-    //      // Process each order to ensure all related subscriptions are attached
-    //      $subscriptionsOrder = $subscriptionsOrder->map(function ($order) {
-    //          // Ensure the flower product exists before accessing its image
-    //          if ($order->flowerProduct) {
-    //              $order->flowerProduct->product_image_url = $order->flowerProduct->product_image;
-    //          }
-     
-    //          // Attach all subscriptions associated with the order
-    //          $order->allSubscriptions = $order->subscription; // Get all subscriptions for the order
-     
-    //          return $order;
-    //      });
-     
-    //      // Pass all orders and their associated subscriptions to the view
-    //      return view('user.subscription-history', compact('subscriptionsOrder'));
-    //  }
-
-
+    
     public function subscriptionHistory()
 {
     // Get the authenticated user's ID using the 'api' guard
@@ -562,68 +530,76 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
         }
     }
 
-
     public function pause(Request $request, $order_id)
     {
         try {
-            // Find the subscription by order_id
-            $subscription = Subscription::where('order_id', $order_id)->where('status','active')->firstOrFail();
-            
-            // Validate input dates
+            // Find the active subscription by order_id
+            $subscription = Subscription::where('order_id', $order_id)->where('status', 'active')->firstOrFail();
+    
+            // Parse the input dates
             $pauseStartDate = Carbon::parse($request->pause_start_date);
             $pauseEndDate = Carbon::parse($request->pause_end_date);
             $pausedDays = $pauseEndDate->diffInDays($pauseStartDate) + 1; // Include both dates
-
-            // Get the most recent new_end_date or default to the original end_date
-            $lastNewEndDate = SubscriptionPauseResumeLog::where('subscription_id', $subscription->subscription_id)
-                ->orderBy('id', 'desc')
-                ->value('new_end_date');
-
-            // Use the most recent new_end_date for recalculating the new end date
-            $currentEndDate = $lastNewEndDate ? Carbon::parse($lastNewEndDate) : Carbon::parse($subscription->end_date);
-
-            // Calculate the new end date by adding paused days
+    
+            // Check if there is already a pause log for the same start and end dates
+            $existingPauseLog = SubscriptionPauseResumeLog::where('subscription_id', $subscription->subscription_id)
+                ->where('pause_start_date', $pauseStartDate)
+                ->where('pause_end_date', $pauseEndDate)
+                ->first();
+    
+            // Calculate the current and new end dates
+            $currentEndDate = $existingPauseLog
+                ? Carbon::parse($existingPauseLog->new_end_date)
+                : Carbon::parse($subscription->end_date);
             $newEndDate = $currentEndDate->addDays($pausedDays);
-
-            // Update the subscription status and new date field
-            $subscription->pause_start_date = $pauseStartDate;
-            $subscription->pause_end_date = $pauseEndDate;
-            $subscription->new_date = $newEndDate; // Update with recalculated end date
-            $subscription->is_active = true;
-
-            // Save the changes
-            $subscription->save();
-
-            // Log the pause action
-            SubscriptionPauseResumeLog::create([
-                'subscription_id' => $subscription->subscription_id,
-                'order_id' => $order_id,
-                'action' => 'paused',
-                'pause_start_date' => $pauseStartDate,
-                'pause_end_date' => $pauseEndDate,
-                'paused_days' => $pausedDays,
-                'new_end_date' => $newEndDate,
-            ]);
-
-            // Log the creation of the pause resume log
-            Log::info('Pause resume log created successfully');
-
-            return redirect()->route('subscription.history')->with('success', 'Subscription paused successfully.');
-
-   
+    
+            if ($existingPauseLog) {
+                // If a pause log exists, update it
+                $existingPauseLog->update([
+                    'pause_start_date' => $pauseStartDate,
+                    'pause_end_date' => $pauseEndDate,
+                    'paused_days' => $pausedDays,
+                    'new_end_date' => $newEndDate,
+                ]);
+    
+                $subscription->update([
+                    'pause_start_date' => $pauseStartDate,
+                    'pause_end_date' => $pauseEndDate,
+                    'new_date' => $newEndDate,
+                ]);
+    
+            } else {
+                // Create a new pause log and update subscription details
+                SubscriptionPauseResumeLog::create([
+                    'subscription_id' => $subscription->subscription_id,
+                    'order_id' => $order_id,
+                    'action' => 'paused',
+                    'pause_start_date' => $pauseStartDate,
+                    'pause_end_date' => $pauseEndDate,
+                    'paused_days' => $pausedDays,
+                    'new_end_date' => $newEndDate,
+                ]);
+    
+                $subscription->update([
+                    'pause_start_date' => $pauseStartDate,
+                    'pause_end_date' => $pauseEndDate,
+                    'new_date' => $newEndDate,
+                ]);
+            }
+    
+            return redirect()->route('subscription.history')->with('success', 'Subscription pause details updated successfully.');
+    
         } catch (\Exception $e) {
-            // Log any errors that occur during the process
+            // Log and handle errors
             Log::error('Error pausing subscription', [
                 'order_id' => $order_id,
                 'error_message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
             ]);
-            return redirect()->back()->with('error', 'An error occurred while pausing the subscription.');
-
-          
+            return redirect()->back()->with('error', 'An error occurred while updating the pause details.');
         }
     }
-
+    
+    
 
     public function resume(Request $request, $order_id)
     {
@@ -639,8 +615,6 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
                 Log::warning('Subscription is not in a paused state.', ['subscription_status' => $subscription->status]);
                
                 return redirect()->back()->with('success', 'Subscription is not in a paused state.');
-
-                
             }
     
             // Parse the dates
@@ -732,6 +706,17 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
         ]);
 
     }
+
+    public function pauseEditPage($order_id)
+{
+    $order = Subscription::where('order_id', $order_id)->firstOrFail();
+
+    return view('user.pause-resume', [
+        'order' => $order,
+        'action' => 'edit', // You can use this to differentiate modes if needed
+    ]);
+}
+
 
     public function resumePage($order_id)
     {

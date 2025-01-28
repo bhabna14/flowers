@@ -285,23 +285,30 @@
                         <a href="{{ route('subscription.details', ['subscription_id' => $order->id, 'order_id' => $order->order_id]) }}"
                             class="button px-10 fw-400 text-14 pay-button-bg h-50 text-white">
                             View Details
-                        </a>              
-                        @if ($order->status == "active")
-                            <a href="{{ route('subscription.pausepage', $order->order_id) }}" 
-                            class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white pause-button" 
-                            style="margin-bottom: 10px; background-color: #c80100 !important;" >
-                           Pause
-                            </a>
-                        @elseif ($order->status == "paused")
-                            <a href="{{ route('subscription.resumepage', $order->order_id) }}" 
-                            class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white resume-button" 
-                            style="margin-bottom: 10px; background-color: #c80100 !important;" >
-                          
-                            Resume
+                        </a>
+                        @if ($order->status == 'active')
+                            @if ($order->pause_start_date && $order->pause_end_date)
+                                <a href="{{ route('subscription.pauseedit', $order->order_id) }}"
+                                    class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white pause-button"
+                                    style="margin-bottom: 10px; background-color: #c80100 !important;">
+                                    Edit Pause
+                                </a>
+                            @else
+                                <a href="{{ route('subscription.pausepage', $order->order_id) }}"
+                                    class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white pause-button"
+                                    style="margin-bottom: 10px; background-color: #c80100 !important;">
+                                    Pause
+                                </a>
+                            @endif
+                        @elseif ($order->status == 'paused')
+                            <a href="{{ route('subscription.resumepage', $order->order_id) }}"
+                                class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white resume-button"
+                                style="margin-bottom: 10px; background-color: #c80100 !important;">
+                                Resume
                             </a>
                         @endif
-                       
                     </div>
+                    
                 </div>
                 @if ($order->status === 'paused')
                 <div class="highlighted-text mt-2">

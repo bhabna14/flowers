@@ -40,7 +40,6 @@ class FlowerRequest extends Model
     {
         return $this->belongsTo(FlowerProduct::class, 'product_id', 'product_id');
     }
-
     // FlowerRequest.php
     public function flowerRequestItems()
     {

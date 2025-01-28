@@ -23,7 +23,6 @@ use App\Models\FlowerRequestItem;
 class FlowerBookingController extends Controller
 {
     //
-   
 
     public function purchaseSubscription(Request $request)
     {
@@ -455,7 +454,6 @@ class FlowerBookingController extends Controller
             // Calculate the new end date by adding paused days
             $newEndDate = $currentEndDate->addDays($pausedDays);
     
-         
             // Update the subscription status and new date field
             $subscription->status = 'paused';
             $subscription->pause_start_date = $pauseStartDate;
