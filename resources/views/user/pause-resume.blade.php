@@ -142,90 +142,63 @@
 
 @section('content')
     <div class="cards">
-
         <div class="card-header">
-            {{ $action === 'pause' ? 'Pause Subscription' : 'Resume Subscription' }}
+            <span class="header-text">
+                {{ $action === 'pause' ? 'Pause Subscription' : ($action === 'edit' ? 'Edit Pause Subscription' : 'Resume Subscription') }}
+            </span>
         </div>
 
-        <!-- Success/Error Message -->
+        <!-- Success/Error Messages -->
         @if (session('success'))
-            <div class="alert alert-success"
-                style="background-color: #09fe11; color: rgb(21, 224, 153);text-align: center;color: black">
+            <div class="alert alert-success" style="text-align: center; color: black;">
                 {{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="alert alert-danger" style="background-color: #ee1708; color: rgb(255, 159, 159); text-align: center;">
+            <div class="alert alert-danger" style="text-align: center;">
                 {{ session('error') }}
             </div>
         @endif
 
         <div class="card-body">
-            @if ($action === 'pause')
+            <!-- Pause Form -->
+            @if ($action === 'pause' || $action === 'edit')
                 <form id="pauseForm" action="{{ route('subscription.pause', $order->order_id) }}" method="POST">
                     @csrf
                     <div class="form-section">
-                        <h4>Pause Details</h4>
+                        <h4>{{ $action === 'pause' ? 'Pause Details' : 'Edit Pause Details' }}</h4>
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="mb-3">
                                     <label for="pause_start_date" class="form-label">Pause Start Date</label>
                                     <input type="date" id="pause_start_date" name="pause_start_date" class="form-control"
-                                        required min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-                                        onchange="updateEndDate()">
+                                        required
+                                        min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                        value="{{ $order->pause_start_date ?? '' }}" onchange="updateEndDate()">
                                 </div>
                             </div>
-
                             <div class="col-md-5">
                                 <div class="mb-3">
                                     <label for="pause_end_date" class="form-label">Pause End Date</label>
                                     <input type="date" id="pause_end_date" name="pause_end_date" class="form-control"
-                                        required min="{{ date('Y-m-d') }} ">
+                                        required
+                                        min="{{ $order->pause_start_date ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                        value="{{ $order->pause_end_date ?? '' }}">
                                 </div>
                             </div>
-
                             <div class="col-md-2" style="margin-top: 20px;">
-                                <button type="submit" class="btn btn-primary">Pause</button>
+                                <button type="submit" class="btn btn-primary">
+                                    {{ $action === 'pause' ? 'Pause' : 'Update Pause' }}
+                                </button>
                             </div>
                         </div>
                     </div>
                 </form>
+            @endif
 
-            @elseif ($action === 'edit')
-            <form id="pauseForm" action="{{ route('subscription.pause', $order->order_id) }}" method="POST">
-                @csrf
-                <div class="form-section">
-                    <h4>Pause Details</h4>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="mb-3">
-                                <label for="pause_start_date" class="form-label">Pause Start Date</label>
-                                <input type="date" id="pause_start_date" name="pause_start_date" class="form-control"
-                                    required min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-                                    value="{{ $order->pause_start_date ? \Carbon\Carbon::parse($order->pause_start_date)->format('Y-m-d') : '' }}"
-                                    onchange="updateEndDate()">
-                            </div>
-                        </div>
-            
-                        <div class="col-md-5">
-                            <div class="mb-3">
-                                <label for="pause_end_date" class="form-label">Pause End Date</label>
-                                <input type="date" id="pause_end_date" name="pause_end_date" class="form-control"
-                                    required min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
-                                    value="{{ $order->pause_end_date ? \Carbon\Carbon::parse($order->pause_end_date)->format('Y-m-d') : '' }}">
-                            </div>
-                        </div>
-            
-                        <div class="col-md-2" style="margin-top: 20px;">
-                            <button type="submit" class="btn btn-primary">Update Pause</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-            
-            @elseif ($action === 'resume')
-
+            <!-- Resume Form -->
+            @if ($action === 'resume')
                 <form id="resumeForm" action="{{ route('subscription.resume', $order->order_id) }}" method="POST">
                     @csrf
                     <div class="form-section">
