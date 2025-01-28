@@ -695,10 +695,10 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
         }
     }
     
-    public function pausePage($order_id)
+    public function pausePage($id)
     {
 
-        $order = Subscription::where('order_id', $order_id)->firstOrFail();
+        $order = Subscription::where('id', $id)->firstOrFail();
 
         return view('user.pause-resume' , [
             'order' => $order,
@@ -707,9 +707,9 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
 
     }
 
-    public function pauseEditPage($order_id)
+    public function pauseEditPage($id)
 {
-    $order = Subscription::where('order_id', $order_id)->firstOrFail();
+    $order = Subscription::where('id', $id)->firstOrFail();
 
     return view('user.pause-resume', [
         'order' => $order,
@@ -718,9 +718,9 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
 }
 
 
-    public function resumePage($order_id)
+    public function resumePage($id)
     {
-        $order = Subscription::where('order_id', $order_id)->firstOrFail();
+        $order = Subscription::where('id', $id)->firstOrFail();
 
         return view('user.pause-resume', [
             'order' => $order,

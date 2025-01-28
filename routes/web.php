@@ -94,13 +94,13 @@ Route::group(['middleware' => ['auth:users']], function () {
 
         Route::post('/booking/flower/subscription', 'processBooking')->name('booking.flower.subscription');
         Route::get('/subscription-history', 'subscriptionhistory')->name('subscription.history');
-        Route::get('/subscription/pause-page/{order_id}', 'pausePage')->name('subscription.pausepage');
-        Route::get('/subscription/pause-edit/{order_id}', 'pauseEditPage')->name('subscription.pauseedit');
-        Route::get('/subscription/resume-page/{order_id}',  'resumePage')->name('subscription.resumepage');
+        Route::get('/subscription/pause-page/{id}', 'pausePage')->name('subscription.pausepage');
+        Route::get('/subscription/pause-edit/{id}', 'pauseEditPage')->name('subscription.pauseedit');
+        Route::get('/subscription/resume-page/{id}',  'resumePage')->name('subscription.resumepage');
         
-        Route::post('/subscription/{order_id}/pause',  'pause')->name('subscription.pause');
-        Route::post('/subscription/{order_id}/resume',  'resume')->name('subscription.resume');
-        Route::post('/subscription/{order_id}/renew',  'renew')->name('subscription.renew');
+        Route::post('/subscription/{id}/pause',  'pause')->name('subscription.pause');
+        Route::post('/subscription/{id}/resume',  'resume')->name('subscription.resume');
+        Route::post('/subscription/{id}/renew',  'renew')->name('subscription.renew');
 
 
         Route::get('/subscription-details/{subscription_id}/{order_id}', 'viewSubscriptionOrderDetails')->name('subscription.details');
