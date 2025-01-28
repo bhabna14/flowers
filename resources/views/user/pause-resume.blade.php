@@ -208,7 +208,7 @@
                                 <label for="pause_start_date" class="form-label">Pause Start Date</label>
                                 <input type="date" id="pause_start_date" name="pause_start_date" class="form-control"
                                     min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
-                                    value="{{ $order->pause_start_date ?? '' }}" onchange="updateEndDate()"   style="background-color: #e9ecef; cursor: not-allowed;">
+                                    value="{{ $order->pause_start_date ?? '' }}" onchange="updateEndDate()"   style="background-color: #e9ecef; cursor: not-allowed;" readonly>
                             </div>
                         </div>
                         <div class="col-md-5">
