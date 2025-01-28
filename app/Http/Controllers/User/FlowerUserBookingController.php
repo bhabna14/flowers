@@ -534,8 +534,10 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
     {
         try {
             // Find the active subscription by order_id
-            $subscription = Subscription::where('order_id', $order_id)->where('status', 'active')->firstOrFail();
-    
+            $subscription = Subscription::where('order_id', $order_id)
+            ->whereIn('status', ['active', 'paused'])
+            ->firstOrFail();
+
             // Parse the input dates
             $pauseStartDate = Carbon::parse($request->pause_start_date);
             $pauseEndDate = Carbon::parse($request->pause_end_date);
