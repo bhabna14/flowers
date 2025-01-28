@@ -144,7 +144,7 @@
     <div class="cards">
         <div class="card-header">
             <span class="header-text">
-                {{ $action === 'pause' ? 'Pause Subscription' : ($action === 'edit' ? 'Edit Pause Subscription' : 'Resume Subscription') }}
+                {{ $action === 'pause' ? 'Pause Subscription' : ($action === 'actedit' ? 'Edit Pause Subscription' : 'Resume Subscription') }}
             </span>
         </div>
 
@@ -195,6 +195,39 @@
                         </div>
                     </div>
                 </form>
+            @endif
+
+            @if ($action === 'pauedit')
+            <form id="pauseForm" action="{{ route('subscription.pause', $order->order_id) }}" method="POST">
+                @csrf
+                <div class="form-section">
+                    <h4>{{ $action === 'pauedit' ? 'Pause Details' : 'Edit Pause Details' }}</h4>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="pause_start_date" class="form-label">Pause Start Date</label>
+                                <input type="date" id="pause_start_date" name="pause_start_date" class="form-control"
+                                    min="{{ \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                    value="{{ $order->pause_start_date ?? '' }}" onchange="updateEndDate()" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="mb-3">
+                                <label for="pause_end_date" class="form-label">Pause End Date</label>
+                                <input type="date" id="pause_end_date" name="pause_end_date" class="form-control"
+                                    required
+                                    min="{{ $order->pause_start_date ?? \Carbon\Carbon::tomorrow()->format('Y-m-d') }}"
+                                    value="{{ $order->pause_end_date ?? '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2" style="margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary">
+                                {{ $action === 'pause' ? 'Pause' : 'Update Pause' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
             @endif
 
             <!-- Resume Form -->

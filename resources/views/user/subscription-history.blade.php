@@ -314,7 +314,7 @@
                                     </a>
                                     @if ($order->status == 'active')
                                         @if ($order->pause_start_date && $order->pause_end_date)
-                                            <a href="{{ route('subscription.pauseedit', $order->id) }}"
+                                            <a href="{{ route('subscription.activeedit', $order->id) }}"
                                                 class="button px-10 fw-400 text-14 bg-dark-4 h-50 text-white pause-button"
                                                 style="margin-bottom: 10px; background-color: #c80100 !important;">
                                                 Edit Pause

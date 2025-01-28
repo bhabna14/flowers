@@ -707,13 +707,23 @@ public function viewSubscriptionOrderDetails($subscription_id, $order_id)
 
     }
 
-    public function pauseEditPage($id)
+    public function activeEditPage($id)
 {
     $order = Subscription::where('id', $id)->firstOrFail();
 
     return view('user.pause-resume', [
         'order' => $order,
-        'action' => 'edit', // You can use this to differentiate modes if needed
+        'action' => 'actedit', // You can use this to differentiate modes if needed
+    ]);
+}
+
+public function pauseEditPage($id)
+{
+    $order = Subscription::where('id', $id)->firstOrFail();
+
+    return view('user.pause-resume', [
+        'order' => $order,
+        'action' => 'pauedit', // You can use this to differentiate modes if needed
     ]);
 }
 
