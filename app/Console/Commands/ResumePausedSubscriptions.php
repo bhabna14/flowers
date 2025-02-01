@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Console\Commands;
+
 use App\Models\Subscription;
 use App\Models\SubscriptionPauseResumeLog;
 use Carbon\Carbon;
@@ -7,20 +10,36 @@ use Illuminate\Support\Facades\Log;
 
 class ResumePausedSubscriptions extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'subscription:resume-paused';
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Automatically resume paused subscriptions when the resume date is reached';
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle()
     {
-        $today = Carbon::today();
-
         // Fetch logs with resume date matching today and join with subscriptions
+        $today = Carbon::now()->format('Y-m-d');
+        
         $logs = SubscriptionPauseResumeLog::whereDate('resume_date', $today)
             ->whereHas('subscription', function ($query) {
                 $query->where('status', 'paused');
             })
             ->with('subscription')
             ->get();
+        
 
         foreach ($logs as $log) {
             $subscription = $log->subscription; // Access linked subscription

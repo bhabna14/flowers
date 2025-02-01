@@ -29,6 +29,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('subscriptions:sendEndingNotifications')
                  ->at('18:16')
                  ->runInBackground();
+
+                 Log::info('Scheduler running at: ' . now());
+
+                 $schedule->command('subscription:resume-paused')
+                          ->dailyAt('00:00')
+                          ->onSuccess(fn () => Log::info('subscription:resume-paused executed successfully'))
+                          ->onFailure(fn () => Log::error('subscription:resume-paused failed to execute'));
     }
 
     /**
