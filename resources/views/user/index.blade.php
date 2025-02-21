@@ -352,49 +352,49 @@
         </div>
     </div>
 </section>
-    <section class="section-bg pt-80 pb-80 md:pt-40 md:pb-40">
+<section class="section-bg pt-80 pb-80 md:pt-40 md:pb-40">
 
 
-        <div class="container">
-            <div class="row y-gap-30 items-center justify-between">
-                <div  class="col-xl-5 col-lg-6" data-aos="fade-up" data-aos-delay="500">
-                    <h2 class="text-30 lh-15">Download the App</h2>
-                    <p class="text-dark-1 pr-40 lg:pr-0 mt-15 sm:mt-5">Stay connected and make your spiritual journey easier with our app. Book pandits, schedule pujas, and get updates on upcoming events all at your fingertips. Download now for a seamless and convenient experience!</p>
+  <div class="container">
+      <div class="row y-gap-30 items-center justify-between">
+          <div  class="col-xl-5 col-lg-6" data-aos="fade-up" data-aos-delay="500">
+              <h2 class="text-30 lh-15">Download the App</h2>
+              <p class="text-dark-1 pr-40 lg:pr-0 mt-15 sm:mt-5">Stay connected and make your spiritual journey easier with our app. Book pandits, schedule pujas, and get updates on upcoming events all at your fingertips. Download now for a seamless and convenient experience!</p>
 
-                    <div class="row y-gap-20 items-center pt-30 sm:pt-10">
-                        <div class="col-auto">
-                            <div class="d-flex items-center px-20 py-10 rounded-8 border-white-15 text-white bg-dark-3">
-                                <div class="icon-apple text-24"></div>
-                                <div class="ml-20">
-                                    <div class="text-14">Download on the</div>
-                                    <div class="text-15 lh-1 fw-500">Apple Store</div>
-                                </div>
-                            </div>
-                        </div>
+              <div class="row y-gap-20 items-center pt-30 sm:pt-10">
+                  <div class="col-auto">
+                    <a href="https://apps.apple.com/in/app/33-crores/id6443912970"
+                    target="_blank" class="d-flex items-center px-20 py-10 rounded-8 border-white-15 text-white bg-dark-3">
+                          <div class="icon-apple text-24"></div>
+                          <div class="ml-20">
+                              <div class="text-14">Download on the</div>
+                              <div class="text-15 lh-1 fw-500">Apple Store</div>
+                          </div>
+                        </a>
+                  </div>
 
-                        <div class="col-auto" >
-                            <a href="https://play.google.com/store/apps/details?id=com.croresadmin.shopifyapp"
-                                target="_blank"
-                                class="d-flex items-center px-20 py-10 rounded-8 border-white-15 text-white bg-dark-3">
-                                <div class="icon-play-market text-24"></div>
-                                <div class="ml-20">
+                  <div class="col-auto" >
+                      <a href="https://play.google.com/store/apps/details?id=com.thirtythreecroresapp&hl=en"
+                          target="_blank"
+                          class="d-flex items-center px-20 py-10 rounded-8 border-white-15 text-white bg-dark-3">
+                          <div class="icon-play-market text-24"></div>
+                          <div class="ml-20">
 
-                                    <div class="text-14">Get in on</div>
-                                    <div class="text-15 lh-1 fw-500">Google Play</div>
+                              <div class="text-14">Get in on</div>
+                              <div class="text-15 lh-1 fw-500">Google Play</div>
 
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                          </div>
+                      </a>
+                  </div>
+              </div>
+          </div>
 
-                <div  class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
-                    <img src="{{ asset('front-assets/img/Beige &amp; White Special Offer Discount Instagram Post.png') }}" alt="image">
-                </div>
-            </div>
-        </div>
-    </section>
-
+          <div  class="col-lg-6" data-aos="fade-up" data-aos-delay="500">
+              <img src="{{ asset('front-assets/img/WhatsApp Image 2024-12-11 at 2.31.41 PM.jpeg') }}" alt="image">
+          </div>
+      </div>
+  </div>
+</section>
 
    
 @endsection

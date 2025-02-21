@@ -18,7 +18,8 @@ class Order extends Model
         'total_price',
         'requested_flower_price',
         'delivery_charge',
-        'order_id',  // Add this line
+        'order_id',
+        'rider_id',
         'address_id',
         'suggestion'
     ];
