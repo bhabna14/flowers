@@ -367,7 +367,7 @@
                     target="_blank" class="d-flex items-center px-20 py-10 rounded-8 border-white-15 text-white bg-dark-3">
                           <div class="icon-apple text-24"></div>
                           <div class="ml-20">
-                              <div class="text-14">Downloa on the</div>
+                              <div class="text-14">Download on the</div>
                               <div class="text-15 lh-1 fw-500">Apple Store</div>
                           </div>
                         </a>
